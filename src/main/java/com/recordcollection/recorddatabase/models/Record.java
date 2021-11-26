@@ -18,19 +18,23 @@ public class Record {
     private String numberOfTracks;
     private String[] tracks;
 
-//    @OneToMany
-//    @JoinColumn(name = "collector_id", referencedColumnName = "id")
-//    @JsonIncludeProperties({"name"})
-//    private Collector collector;
-
     @ManyToMany
     @JsonIgnoreProperties("records")
     @JoinTable(
-            name = "artists_records",
+            name = "artist_record",
             joinColumns = @JoinColumn(name = "record_id"),
             inverseJoinColumns = @JoinColumn(name = "artist_id")
     )
     private Set<Artist> artists;
+
+    @ManyToMany
+    @JsonIncludeProperties({"id", "name"})
+    @JoinTable(
+            name = "collector_record",
+            joinColumns = @JoinColumn(name = "record_id"),
+            inverseJoinColumns = @JoinColumn(name = "collector_id")
+    )
+    private Set<Collector> collectors;
 
     public Record() {
 
@@ -87,11 +91,7 @@ public class Record {
         return artists;
     }
 
-//    public Collector getCollector() {
-//        return collector;
-//    }
-//
-//    public void setCollector(Collector collector) {
-//        this.collector = collector;
-//    }
+    public Set<Collector> getCollectors() {
+        return collectors;
+    }
 }

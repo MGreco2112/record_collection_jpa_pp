@@ -13,10 +13,13 @@ public class Collector {
 
     private String name;
 
-//    @ManyToOne
-//    @JoinColumn(name = "record_id", referencedColumnName = "id")
-//    @JsonIncludeProperties("name")
-//    private Set<Record> records;
+    @ManyToMany
+    @JoinTable(
+            name = "collector_record",
+            joinColumns = @JoinColumn(name = "collector_id"),
+            inverseJoinColumns = @JoinColumn(name = "record_id")
+    )
+    private Set<Record> records;
 
     public Collector() {
 
@@ -43,7 +46,7 @@ public class Collector {
         this.name = name;
     }
 
-//    public Set<Record> getRecords() {
-//        return records;
-//    }
+    public Set<Record> getRecords() {
+        return records;
+    }
 }

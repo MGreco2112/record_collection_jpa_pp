@@ -1,5 +1,7 @@
 package com.recordcollection.recorddatabase.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 import java.util.List;
 import java.util.Set;
@@ -11,20 +13,21 @@ public class Artist {
     private Long id;
 
     private String artistName;
-    private List<String> members;
+    private String[] members;
     @ManyToMany
+    @JsonIgnoreProperties("artists")
     @JoinTable(
             name = "artist_record",
             joinColumns = @JoinColumn(name = "artist_id"),
             inverseJoinColumns = @JoinColumn(name = "record_id")
     )
-    private Set<Artist> artists;
+    private Set<Record> records;
 
     public Artist() {
 
     }
 
-    public Artist(String artistName, List<String> members) {
+    public Artist(String artistName, String[] members) {
         this.artistName = artistName;
         this.members = members;
     }
@@ -45,15 +48,19 @@ public class Artist {
         this.artistName = artistName;
     }
 
-    public List<String> getMembers() {
+    public String[] getMembers() {
         return members;
     }
 
-    public void setMembers(List<String> members) {
+    public void setMembers(String[] members) {
         this.members = members;
     }
 
-    public Set<Artist> getArtists() {
-        return artists;
+    public void setRecords(Set<Record> records) {
+        this.records = records;
+    }
+
+    public Set<Record> getRecords() {
+        return records;
     }
 }

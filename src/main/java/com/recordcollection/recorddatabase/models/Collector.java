@@ -1,9 +1,8 @@
 package com.recordcollection.recorddatabase.models;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+
+import javax.persistence.*;
 import java.util.Set;
 
 @Entity
@@ -13,7 +12,11 @@ public class Collector {
     private Long id;
 
     private String name;
-    private Set<Record> records;
+
+//    @ManyToOne
+//    @JoinColumn(name = "record_id", referencedColumnName = "id")
+//    @JsonIncludeProperties("name")
+//    private Set<Record> records;
 
     public Collector() {
 
@@ -40,7 +43,7 @@ public class Collector {
         this.name = name;
     }
 
-    public Set<Record> getRecords() {
-        return records;
-    }
+//    public Set<Record> getRecords() {
+//        return records;
+//    }
 }

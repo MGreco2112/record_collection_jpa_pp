@@ -91,6 +91,10 @@ public class Record {
         return artists;
     }
 
+    public void setArtists(Set<Artist> artists) {
+        this.artists = artists;
+    }
+
     public Set<Collector> getCollectors() {
         return collectors;
     }

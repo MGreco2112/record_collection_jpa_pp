@@ -1,5 +1,6 @@
 package com.recordcollection.recorddatabase.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 
 import javax.persistence.*;
@@ -14,6 +15,7 @@ public class Collector {
     private String name;
 
     @ManyToMany
+    @JsonIgnoreProperties("collectors")
     @JoinTable(
             name = "collector_record",
             joinColumns = @JoinColumn(name = "collector_id"),

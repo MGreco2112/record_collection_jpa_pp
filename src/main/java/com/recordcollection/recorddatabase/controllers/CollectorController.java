@@ -15,7 +15,7 @@ import java.util.Optional;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/api/collector")
+@RequestMapping("/api/collectors")
 public class CollectorController {
     @Autowired
     CollectorRepository repository;

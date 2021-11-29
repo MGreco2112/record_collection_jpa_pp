@@ -101,5 +101,18 @@ public class RecordController {
         return new ResponseEntity<>(repository.save(selRecord), HttpStatus.OK);
     }
 
+    @DeleteMapping("/removeArtists/{id}")
+    public ResponseEntity<String> removeArtistFromRepo(@PathVariable Long id) {
+        Optional<Artist> selArtist = artistRepository.findById(id);
+
+        if (selArtist.isEmpty()) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        artistRepository.delete(selArtist.get());
+
+        return new ResponseEntity<>("Artist Deleted", HttpStatus.OK);
+    }
+
 
 }

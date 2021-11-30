@@ -23,6 +23,10 @@ public class Collector {
     )
     private Set<Record> records;
 
+    @OneToMany(mappedBy = "collector", fetch = FetchType.LAZY)
+    private Set<Comment> comments;
+
+
     public Collector() {
 
     }

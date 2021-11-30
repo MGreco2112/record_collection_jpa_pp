@@ -55,4 +55,16 @@ public class Collector {
     public Set<Record> getRecords() {
         return records;
     }
+
+    public void setRecords(Set<Record> records) {
+        this.records = records;
+    }
+
+    public Set<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(Set<Comment> comments) {
+        this.comments = comments;
+    }
 }

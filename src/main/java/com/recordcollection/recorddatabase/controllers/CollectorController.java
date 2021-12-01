@@ -41,34 +41,26 @@ public class CollectorController {
         return repository.save(collector);
     }
 
-//    @PostMapping("/comment/{id}")
-//    public ResponseEntity<Collector> createNewComment(@PathVariable Long id, @RequestBody Comment comment) {
-//        Collector selCollector = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-//
-//        if (comment == null) {
-//            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-//        }
-//
-//
-//
-//
-//        System.out.println(newComment.getRecord().getId());
-//
-////        Record selRecord = recordRepository.findById(comment.getRecord().getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-////
-////        selRecord.getComments().add(comment);
-////
-////        recordRepository.save(selRecord);
-////
-////        comment.setCollector(selCollector);
-////
-//          commentRepository.save(comment);
-//
-////        selCollector.getComments().add(comment);
-//
-////        return new ResponseEntity<>(repository.save(selCollector), HttpStatus.OK);
-//        return new ResponseEntity<>(null, HttpStatus.OK);
-//    }
+    @PostMapping("/comment/{id}")
+    public ResponseEntity<Collector> createNewComment(@PathVariable Long id, @RequestBody Comment comment) {
+        Collector selCollector = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        if (comment == null || comment.getRecord().getId() == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        Record selRecord = recordRepository.findById(comment.getRecord().getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        selRecord.getComments().add(comment);
+
+        recordRepository.save(selRecord);
+
+        comment.setCollector(selCollector);
+
+        commentRepository.save(comment);
+
+        return new ResponseEntity<>(repository.save(selCollector), HttpStatus.OK);
+    }
 
     @PostMapping("/record/{id}")
     public ResponseEntity<Collector> addNewRecordToCollector(@PathVariable Long id, @RequestBody Record record) {

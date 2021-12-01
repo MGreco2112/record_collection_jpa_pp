@@ -36,9 +36,9 @@ public class Record {
     )
     private Set<Collector> collectors;
 
-//    @OneToMany(mappedBy = "record", fetch = FetchType.LAZY)
-//    @JsonIncludeProperties({"id, userComment"})
-//    private Set<Comment> comments;
+    @OneToMany(mappedBy = "record", fetch = FetchType.LAZY)
+    @JsonIncludeProperties({"id, userComment"})
+    private Set<Comment> comments;
 
     public Record() {
 
@@ -107,11 +107,11 @@ public class Record {
         this.collectors = collectors;
     }
 
-//    public Set<Comment> getComments() {
-//        return comments;
-//    }
-//
-//    public void setComments(Set<Comment> comments) {
-//        this.comments = comments;
-//    }
+    public Set<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(Set<Comment> comments) {
+        this.comments = comments;
+    }
 }

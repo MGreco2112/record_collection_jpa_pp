@@ -15,7 +15,7 @@ public class Collector {
     private String name;
 
     @ManyToMany
-    @JsonIgnoreProperties("collectors")
+    @JsonIgnoreProperties({"collectors", "comments"})
     @JoinTable(
             name = "collector_record",
             joinColumns = @JoinColumn(name = "collector_id"),
@@ -24,6 +24,7 @@ public class Collector {
     private Set<Record> records;
 
     @OneToMany(mappedBy = "collector", fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("collector")
     private Set<Comment> comments;
 
 

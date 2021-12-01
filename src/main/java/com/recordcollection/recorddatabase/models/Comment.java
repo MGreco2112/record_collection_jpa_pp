@@ -12,10 +12,10 @@ public class Comment {
 
     private String userComment;
 
-//    @ManyToOne
-//    @JoinColumn(name = "record_id", referencedColumnName = "id")
-//    @JsonIncludeProperties("name")
-//    private Record record;
+    @ManyToOne
+    @JoinColumn(name = "record_id", referencedColumnName = "id")
+    @JsonIncludeProperties({"id","name"})
+    private Record record;
 
     @ManyToOne
     @JoinColumn(name = "collector_id", referencedColumnName = "id")
@@ -27,7 +27,7 @@ public class Comment {
 
     public Comment(String userComment, Record record, Collector collector) {
         this.userComment = userComment;
-//        this.record = record;
+        this.record = record;
         this.collector = collector;
     }
 
@@ -47,13 +47,13 @@ public class Comment {
         this.userComment = userComment;
     }
 
-//    public Record getRecord() {
-//        return record;
-//    }
-//
-//    public void setRecord(Record record) {
-//        this.record = record;
-//    }
+    public Record getRecord() {
+        return record;
+    }
+
+    public void setRecord(Record record) {
+        this.record = record;
+    }
 
     public Collector getCollector() {
         return collector;

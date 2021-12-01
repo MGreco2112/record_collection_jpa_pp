@@ -85,9 +85,12 @@ public class CollectorController {
             selCollector.setName(update.getName());
         }
         if (update.getRecords() != null) {
-            selCollector.getRecords().addAll(update.getRecords());
+            selCollector.setRecords(update.getRecords());
             //if record not in repository, save to repo,
             //or do we only allow records in repo to be added?
+        }
+        if (update.getComments() != null) {
+            selCollector.setComments(update.getComments());
         }
 
         return new ResponseEntity<>(repository.save(selCollector), HttpStatus.OK);
@@ -100,5 +103,26 @@ public class CollectorController {
         repository.delete(delCollector);
 
         return new ResponseEntity<>("Collector Deleted", HttpStatus.OK);
+    }
+
+    @DeleteMapping("/delete/comment/{id}")
+    public ResponseEntity<String> deleteComment(@PathVariable Long id, @RequestBody Comment comment) {
+        Collector selCollector = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        Record selRecord = recordRepository.findById(comment.getRecord().getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        selCollector.getComments().remove(comment);
+
+        selRecord.getComments().remove(comment);
+
+        comment.setCollector(null);
+        comment.setRecord(null);
+
+        commentRepository.delete(comment);
+
+        repository.save(selCollector);
+        recordRepository.save(selRecord);
+
+        return new ResponseEntity<>("Comment Deleted", HttpStatus.OK);
     }
 }

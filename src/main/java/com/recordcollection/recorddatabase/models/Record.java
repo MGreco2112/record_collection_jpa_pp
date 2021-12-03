@@ -37,7 +37,7 @@ public class Record {
     private Set<Collector> collectors;
 
     @OneToMany(mappedBy = "record", fetch = FetchType.LAZY)
-    @JsonIncludeProperties({"id, userComment"})
+    @JsonIgnoreProperties({"record", "collector"})
     private Set<Comment> comments;
 
     public Record() {

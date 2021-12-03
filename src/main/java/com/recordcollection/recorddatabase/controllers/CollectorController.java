@@ -53,13 +53,15 @@ public class CollectorController {
 
         Record selRecord = recordRepository.findById(comment.getRecord().getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        selRecord.getComments().add(comment);
+        Comment newComment = commentRepository.save(comment);
+
+        newComment.setCollector(selCollector);
+
+        newComment.setRecord(selRecord);
+
+        selRecord.getComments().add(newComment);
 
         recordRepository.save(selRecord);
-
-        comment.setCollector(selCollector);
-
-        commentRepository.save(comment);
 
         return new ResponseEntity<>(repository.save(selCollector), HttpStatus.OK);
     }

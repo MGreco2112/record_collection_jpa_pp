@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 @CrossOrigin
 @RestController
@@ -111,14 +113,16 @@ public class CollectorController {
 
         Record selRecord = recordRepository.findById(comment.getRecord().getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        selCollector.getComments().remove(comment);
+        Comment selComment = commentRepository.findById(comment.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        selRecord.getComments().remove(comment);
+        selCollector.getComments().remove(selComment);
 
-        comment.setCollector(null);
-        comment.setRecord(null);
+        selRecord.getComments().remove(selComment);
 
-        commentRepository.delete(comment);
+        selComment.setCollector(null);
+        selComment.setRecord(null);
+
+        commentRepository.delete(selComment);
 
         repository.save(selCollector);
         recordRepository.save(selRecord);

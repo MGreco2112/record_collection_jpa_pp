@@ -10,4 +10,8 @@ public class RecorddatabaseApplication {
 		SpringApplication.run(RecorddatabaseApplication.class, args);
 	}
 
+	//Sort records alphabetically by Name, by Artist, and by Collector
+	//Sort Artists Alphabetically
+	//Sort Collectors by Record
+
 }

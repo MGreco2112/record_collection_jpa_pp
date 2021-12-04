@@ -7,15 +7,13 @@ import com.recordcollection.recorddatabase.repositories.CollectorRepository;
 import com.recordcollection.recorddatabase.repositories.CommentRepository;
 import com.recordcollection.recorddatabase.repositories.RecordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @CrossOrigin
 @RestController
@@ -36,6 +34,11 @@ public class CollectorController {
     @GetMapping("/{id}")
     public ResponseEntity<Collector> getCollectorById(@PathVariable Long id) {
         return new ResponseEntity<>(repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)), HttpStatus.OK);
+    }
+
+    @GetMapping("/record/{id}")
+    public List<Collector> getCollectorsByRecord(@PathVariable Long id) {
+        return new ArrayList<>(repository.findAllByRecordsId(id, Sort.by("name")));
     }
 
     @PostMapping

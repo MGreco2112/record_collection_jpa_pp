@@ -12,6 +12,5 @@ public class RecorddatabaseApplication {
 
 	//Sort records alphabetically by Name, by Artist, and by Collector
 	//Sort Artists Alphabetically
-	//Sort Collectors by Record
 
 }

@@ -15,7 +15,7 @@ public class Artist {
     private String artistName;
     private String[] members;
     @ManyToMany
-    @JsonIgnoreProperties("artists")
+    @JsonIgnoreProperties({"artists", "comments"})
     @JoinTable(
             name = "artist_record",
             joinColumns = @JoinColumn(name = "artist_id"),

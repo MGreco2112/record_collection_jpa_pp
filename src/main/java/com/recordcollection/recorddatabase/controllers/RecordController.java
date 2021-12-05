@@ -5,11 +5,13 @@ import com.recordcollection.recorddatabase.models.Record;
 import com.recordcollection.recorddatabase.repositories.ArtistRepository;
 import com.recordcollection.recorddatabase.repositories.RecordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -31,6 +33,11 @@ public class RecordController {
     @GetMapping("/{id}")
     public ResponseEntity<Record> getRecordById(@PathVariable Long id) {
         return new ResponseEntity<>(repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)), HttpStatus.OK);
+    }
+
+    @GetMapping("/artist/{name}")
+    public List<Artist> getArtistsByName(@PathVariable String name) {
+        return new ArrayList<>(artistRepository.findAllByArtistName(name, Sort.by("artistName")));
     }
 
     @PostMapping

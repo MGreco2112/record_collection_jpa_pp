@@ -30,14 +30,24 @@ public class RecordController {
         return repository.findAll();
     }
 
+    @GetMapping("/artists")
+    public List<Artist> getAllArtists() {
+        return artistRepository.findAll();
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Record> getRecordById(@PathVariable Long id) {
         return new ResponseEntity<>(repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)), HttpStatus.OK);
     }
 
+//    @GetMapping("/{name}")
+//    public List<Record> getRecordsByName(@PathVariable String name) {
+//        return repository.getAllRecordsByName(name, Sort.by("name"));
+//    }
+
     @GetMapping("/artist/{name}")
     public List<Artist> getArtistsByName(@PathVariable String name) {
-        return new ArrayList<>(artistRepository.findAllByArtistName(name, Sort.by("artistName")));
+        return artistRepository.findAllByArtistName(name, Sort.by("artistName"));
     }
 
     @PostMapping

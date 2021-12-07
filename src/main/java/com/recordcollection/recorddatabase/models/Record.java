@@ -1,5 +1,6 @@
 package com.recordcollection.recorddatabase.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 
@@ -14,6 +15,8 @@ public class Record {
     private Long id;
 
     private String name;
+    @JsonIgnore
+    private String nameFormatted;
     private String releaseYear;
     private String numberOfTracks;
     private String[] tracks;
@@ -44,8 +47,9 @@ public class Record {
 
     }
 
-    public Record(String name, String releaseYear, String numberOfTracks, String[] tracks) {
+    public Record(String name, String nameFormatted, String releaseYear, String numberOfTracks, String[] tracks) {
         this.name = name;
+        this.nameFormatted = nameFormatted;
         this.releaseYear = releaseYear;
         this.numberOfTracks = numberOfTracks;
         this.tracks = tracks;
@@ -65,6 +69,14 @@ public class Record {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getNameFormatted() {
+        return nameFormatted;
+    }
+
+    public void setNameFormatted(String nameFormatted) {
+        this.nameFormatted = nameFormatted;
     }
 
     public String getReleaseYear() {

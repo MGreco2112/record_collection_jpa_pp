@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface ArtistRepository extends JpaRepository<Artist, Long> {
-    List<Artist> findAllByArtistName(String name, Sort sort);
+    List<Artist> findAllByArtistNameFormatted(String name, Sort sort);
 }

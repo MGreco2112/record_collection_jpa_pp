@@ -4,6 +4,7 @@ import com.recordcollection.recorddatabase.models.Artist;
 import com.recordcollection.recorddatabase.models.Record;
 import com.recordcollection.recorddatabase.repositories.ArtistRepository;
 import com.recordcollection.recorddatabase.repositories.RecordRepository;
+import org.aspectj.util.GenericSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -40,14 +41,14 @@ public class RecordController {
         return new ResponseEntity<>(repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)), HttpStatus.OK);
     }
 
-//    @GetMapping("/{name}")
-//    public List<Record> getRecordsByName(@PathVariable String name) {
-//        return repository.getAllRecordsByName(name, Sort.by("name"));
-//    }
+    @GetMapping("/byName/{name}")
+    public List<Record> getRecordsByName(@PathVariable String name) {
+        return repository.getAllRecordsByNameFormatted(name, Sort.by("name"));
+    }
 
     @GetMapping("/artist/{name}")
     public List<Artist> getArtistsByName(@PathVariable String name) {
-        return artistRepository.findAllByArtistName(name, Sort.by("artistName"));
+        return artistRepository.findAllByArtistNameFormatted(name, Sort.by("artistName"));
     }
 
     @PostMapping
@@ -80,6 +81,9 @@ public class RecordController {
         if (update.getName() != null) {
             selRecord.setName(update.getName());
         }
+        if (update.getNameFormatted() != null) {
+            selRecord.setNameFormatted(update.getNameFormatted());
+        }
         if (update.getReleaseYear() != null) {
             selRecord.setReleaseYear(update.getReleaseYear());
         }
@@ -94,6 +98,26 @@ public class RecordController {
         }
 
         return new ResponseEntity<>(repository.save(selRecord), HttpStatus.OK);
+    }
+
+    @PutMapping("/artist/{id}")
+    public ResponseEntity<Artist> updateArtistById(@PathVariable Long id, @RequestBody Artist updates) {
+        Artist selArtist = artistRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        if (updates.getArtistName() != null) {
+            selArtist.setArtistName(updates.getArtistName());
+        }
+        if (updates.getArtistNameFormatted() != null) {
+            selArtist.setArtistNameFormatted(updates.getArtistNameFormatted());
+        }
+        if (updates.getMembers() != null) {
+            selArtist.setMembers(updates.getMembers());
+        }
+        if (updates.getRecords() != null) {
+            selArtist.setRecords(updates.getRecords());
+        }
+
+        return ResponseEntity.ok(artistRepository.save(selArtist));
     }
 
     @DeleteMapping("/{id}")

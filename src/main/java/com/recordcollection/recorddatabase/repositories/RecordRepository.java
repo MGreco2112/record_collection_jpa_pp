@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface RecordRepository extends JpaRepository<Record, Long> {
-    List<Record> getAllRecordsByName(String name, Sort sort);
+    List<Record> getAllRecordsByNameFormatted(String name, Sort sort);
 }

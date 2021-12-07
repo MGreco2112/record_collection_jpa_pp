@@ -18,5 +18,6 @@ public class RecorddatabaseApplication {
 		-Record record: the item sender is interested in
 		-Integer offerAmount: currency offered for record
 	 */
+	//Create Admin Entity that has similar permissions to creating Records as Users
 
 }

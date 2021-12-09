@@ -2,9 +2,11 @@ package com.recordcollection.recorddatabase.controllers;
 
 import com.recordcollection.recorddatabase.models.Collector;
 import com.recordcollection.recorddatabase.models.Comment;
+import com.recordcollection.recorddatabase.models.Offer;
 import com.recordcollection.recorddatabase.models.Record;
 import com.recordcollection.recorddatabase.repositories.CollectorRepository;
 import com.recordcollection.recorddatabase.repositories.CommentRepository;
+import com.recordcollection.recorddatabase.repositories.OfferRepository;
 import com.recordcollection.recorddatabase.repositories.RecordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -25,6 +27,8 @@ public class CollectorController {
     RecordRepository recordRepository;
     @Autowired
     CommentRepository commentRepository;
+    @Autowired
+    OfferRepository offerRepository;
 
     @GetMapping
     public List<Collector> getAllCollectors() {
@@ -39,6 +43,18 @@ public class CollectorController {
     @GetMapping("/record/{id}")
     public List<Collector> getCollectorsByRecord(@PathVariable Long id) {
         return new ArrayList<>(repository.findAllByRecordsId(id, Sort.by("name")));
+    }
+
+    @GetMapping("/offers")
+    public List<Offer> getAllOffers() {
+        return offerRepository.findAll();
+    }
+
+    @GetMapping("/sentOffers/{id}")
+    public ResponseEntity<Set<Offer>> getOffersByCollectorId(@PathVariable Long id) {
+        Collector selCollector = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        return ResponseEntity.ok(selCollector.getSentOffers());
     }
 
     @PostMapping
@@ -68,6 +84,11 @@ public class CollectorController {
 
         return new ResponseEntity<>(repository.save(selCollector), HttpStatus.OK);
     }
+
+//    @PostMapping("/offers/{id}")
+//    public ResponseEntity<Collector> createNewOffer(@PathVariable Long id, @RequestBody Offer offer) {
+//
+//    }
 
     @PostMapping("/record/{id}")
     public ResponseEntity<Collector> addNewRecordToCollector(@PathVariable Long id, @RequestBody Record record) {

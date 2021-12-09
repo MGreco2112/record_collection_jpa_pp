@@ -43,6 +43,10 @@ public class Record {
     @JsonIgnoreProperties({"record"})
     private Set<Comment> comments;
 
+    @OneToMany(mappedBy = "record", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private Set<Offer> offers;
+
     public Record() {
 
     }
@@ -125,5 +129,13 @@ public class Record {
 
     public void setComments(Set<Comment> comments) {
         this.comments = comments;
+    }
+
+    public Set<Offer> getOffers() {
+        return offers;
+    }
+
+    public void setOffers(Set<Offer> offers) {
+        this.offers = offers;
     }
 }

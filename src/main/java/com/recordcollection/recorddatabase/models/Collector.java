@@ -27,6 +27,12 @@ public class Collector {
     @JsonIgnoreProperties("collector")
     private Set<Comment> comments;
 
+    @OneToMany(mappedBy = "sender", fetch = FetchType.LAZY)
+    private Set<Offer> sentOffers;
+
+    @OneToMany(mappedBy = "receiver", fetch = FetchType.LAZY)
+    private Set<Offer> receivedOffers;
+
 
     public Collector() {
 
@@ -67,5 +73,21 @@ public class Collector {
 
     public void setComments(Set<Comment> comments) {
         this.comments = comments;
+    }
+
+    public Set<Offer> getSentOffers() {
+        return sentOffers;
+    }
+
+    public void setSentOffers(Set<Offer> sentOffers) {
+        this.sentOffers = sentOffers;
+    }
+
+    public Set<Offer> getReceivedOffers() {
+        return receivedOffers;
+    }
+
+    public void setReceivedOffers(Set<Offer> receivedOffers) {
+        this.receivedOffers = receivedOffers;
     }
 }

@@ -85,10 +85,20 @@ public class CollectorController {
         return new ResponseEntity<>(repository.save(selCollector), HttpStatus.OK);
     }
 
-//    @PostMapping("/offers/{id}")
-//    public ResponseEntity<Collector> createNewOffer(@PathVariable Long id, @RequestBody Offer offer) {
-//
-//    }
+    @PostMapping("/offers/{id}")
+    public ResponseEntity<Collector> createNewOffer(@PathVariable Long id, @RequestBody Offer offer) {
+        Collector selCollector = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Collector recCollector = repository.findById(offer.getReceiver().getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        Offer newOffer = offerRepository.save(offer);
+
+        selCollector.getSentOffers().add(newOffer);
+        recCollector.getReceivedOffers().add(newOffer);
+
+        repository.save(recCollector);
+
+        return ResponseEntity.ok(repository.save(selCollector));
+    }
 
     @PostMapping("/record/{id}")
     public ResponseEntity<Collector> addNewRecordToCollector(@PathVariable Long id, @RequestBody Record record) {

@@ -130,6 +130,12 @@ public class CollectorController {
         if (update.getComments() != null) {
             selCollector.setComments(update.getComments());
         }
+        if (update.getSentOffers() != null) {
+            selCollector.setSentOffers(update.getSentOffers());
+        }
+        if (update.getReceivedOffers() != null) {
+            selCollector.setReceivedOffers(update.getReceivedOffers());
+        }
 
         return new ResponseEntity<>(repository.save(selCollector), HttpStatus.OK);
     }
@@ -164,5 +170,18 @@ public class CollectorController {
         recordRepository.save(selRecord);
 
         return new ResponseEntity<>("Comment Deleted", HttpStatus.OK);
+    }
+
+    @DeleteMapping("/delete/offer/{id}")
+    public ResponseEntity<String> deleteOfferById(@PathVariable Long id) {
+        Offer selOffer = offerRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        selOffer.setRecord(null);
+        selOffer.setSender(null);
+        selOffer.setReceiver(null);
+
+        offerRepository.delete(selOffer);
+
+        return ResponseEntity.ok("Offer deleted");
     }
 }

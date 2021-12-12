@@ -140,6 +140,25 @@ public class CollectorController {
         return new ResponseEntity<>(repository.save(selCollector), HttpStatus.OK);
     }
 
+    @PutMapping("/offer/{id}")
+    public ResponseEntity<Collector> acceptOffer(@PathVariable Long id, @RequestBody Offer offer) {
+        Collector recCollector = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Offer selOffer = offerRepository.findById(offer.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Collector sentCollector = repository.findById(offer.getSender().getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        recCollector.getRecords().remove(selOffer.getRecord());
+        sentCollector.getRecords().add(selOffer.getRecord());
+
+        selOffer.setRecord(null);
+        selOffer.setReceiver(null);
+        selOffer.setSender(null);
+
+        offerRepository.delete(selOffer);
+        repository.save(sentCollector);
+
+        return ResponseEntity.ok(repository.save(recCollector));
+    }
+
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteById(@PathVariable Long id) {
         Collector delCollector = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));

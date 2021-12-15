@@ -12,8 +12,8 @@ public class Artist {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @JsonIgnore
     private String artistName;
+    @JsonIgnore
     private String artistNameFormatted;
     private String[] members;
     @ManyToMany

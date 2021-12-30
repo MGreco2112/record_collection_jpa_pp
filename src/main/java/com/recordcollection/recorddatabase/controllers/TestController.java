@@ -16,9 +16,6 @@ public class TestController {
     @Autowired
     RestTemplate restTemplate;
 
-    @Value("${geekylikes.app.newsApiKey}")
-    private String apiKey;
-
     @GetMapping("/all")
     public String allAccess() {
         return "Public content";

@@ -4,10 +4,12 @@ import com.recordcollection.recorddatabase.models.Collector;
 import com.recordcollection.recorddatabase.models.Comment;
 import com.recordcollection.recorddatabase.models.Offer;
 import com.recordcollection.recorddatabase.models.Record;
+import com.recordcollection.recorddatabase.models.auth.User;
 import com.recordcollection.recorddatabase.repositories.CollectorRepository;
 import com.recordcollection.recorddatabase.repositories.CommentRepository;
 import com.recordcollection.recorddatabase.repositories.OfferRepository;
 import com.recordcollection.recorddatabase.repositories.RecordRepository;
+import com.recordcollection.recorddatabase.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -29,6 +31,8 @@ public class CollectorController {
     CommentRepository commentRepository;
     @Autowired
     OfferRepository offerRepository;
+    @Autowired
+    UserService userService;
 
     @GetMapping
     public List<Collector> getAllCollectors() {
@@ -59,8 +63,18 @@ public class CollectorController {
 
     @PostMapping
     //TODO link auth system with posting new collector
-    public Collector createNewCollector(@RequestBody Collector collector) {
-        return repository.save(collector);
+    public ResponseEntity<Collector> createNewCollector(@RequestBody Collector collector) {
+        User currentUser = userService.getCurrentUser();
+
+        if (currentUser == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        Collector newCollector = collector;
+
+        newCollector.setUser(currentUser);
+
+        return ResponseEntity.ok(repository.save(newCollector));
     }
 
     @PostMapping("/comment/{id}")

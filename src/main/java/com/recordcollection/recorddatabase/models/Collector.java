@@ -1,7 +1,9 @@
 package com.recordcollection.recorddatabase.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+import com.recordcollection.recorddatabase.models.auth.User;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -32,6 +34,15 @@ public class Collector {
 
     @OneToMany(mappedBy = "receiver", fetch = FetchType.LAZY)
     private Set<Offer> receivedOffers;
+
+    @OneToOne
+    @JoinColumn(
+            name = "users_id",
+            referencedColumnName = "id"
+    )
+    @JsonIgnore
+    private User user;
+
 
 
     public Collector() {
@@ -89,5 +100,13 @@ public class Collector {
 
     public void setReceivedOffers(Set<Offer> receivedOffers) {
         this.receivedOffers = receivedOffers;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

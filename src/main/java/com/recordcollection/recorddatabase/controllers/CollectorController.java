@@ -58,6 +58,7 @@ public class CollectorController {
     }
 
     @PostMapping
+    //TODO link auth system with posting new collector
     public Collector createNewCollector(@RequestBody Collector collector) {
         return repository.save(collector);
     }

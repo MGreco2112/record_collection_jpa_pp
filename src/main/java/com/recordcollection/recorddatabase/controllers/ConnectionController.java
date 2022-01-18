@@ -49,4 +49,6 @@ public class ConnectionController {
         return new ResponseEntity<>(rels, HttpStatus.OK);
     }
 
+    //todo add other friend routes
+
 }

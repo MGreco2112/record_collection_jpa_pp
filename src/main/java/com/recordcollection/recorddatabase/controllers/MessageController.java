@@ -6,10 +6,10 @@ import com.recordcollection.recorddatabase.repositories.MessageRepository;
 import com.recordcollection.recorddatabase.repositories.UserRepository;
 import com.recordcollection.recorddatabase.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -34,5 +34,20 @@ public class MessageController {
         return repository.findAll();
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Message> getMessageById(@PathVariable Long id) {
+        Message message = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
+        return ResponseEntity.ok(message);
+    }
+
+    @GetMapping("/sender/{id}")
+    public List<Message> getMessagesBySenderId(@PathVariable Long id) {
+        return repository.findAllBySender_id(id);
+    }
+
+    @GetMapping("/receiver/{id}")
+    public List<Message> getMessagesByReceiverId(@PathVariable Long id) {
+        return repository.findAllByReceiver_id(id);
+    }
 }

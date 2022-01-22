@@ -46,7 +46,7 @@ public class CollectorController {
 
     @GetMapping("/record/{id}")
     public List<Collector> getCollectorsByRecord(@PathVariable Long id) {
-        return new ArrayList<>(repository.findAllByRecordsid(id, Sort.by("name")));
+        return new ArrayList<>(repository.findAllByRecords_id(id, Sort.by("name")));
     }
 
     @GetMapping("/offers")

@@ -79,6 +79,58 @@ public class MessageController {
         return ResponseEntity.ok(repository.findAllBySender_idAndReceiver_id(currentCollector.get().getId(), receiver.getId()));
     }
 
+    @PostMapping("/current/{id}")
+    public ResponseEntity<Message> sendNewMessageToReceiver(@PathVariable Long id, Message message) {
+        Optional<Collector> currentCollector = collectorRepository.findByUser_id(userService.getCurrentUser().getId());
 
+        if (currentCollector.isEmpty()) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        Collector receiver = collectorRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        Message newMessage = new Message(message.getContent(), currentCollector.get(), receiver);
+
+        return new ResponseEntity<>(repository.save(newMessage), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/view/{id}")
+    public ResponseEntity<Message> openMessage(@PathVariable Long id) {
+        Optional<Collector> currentCollector = collectorRepository.findByUser_id(userService.getCurrentUser().getId());
+
+        if (currentCollector.isEmpty()) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        Message unreadMessage = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        unreadMessage.setWasSeen(true);
+
+        return ResponseEntity.ok(repository.save(unreadMessage));
+    }
+
+    @PutMapping("/respond/{id}")
+    public ResponseEntity<Message> respondToMessage(@PathVariable Long id, String responseText) {
+        Optional<Collector> currentCollector = collectorRepository.findByUser_id(userService.getCurrentUser().getId());
+
+        if (currentCollector.isEmpty()) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        Message message = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        message.setContent(message.getContent() + "\n" + responseText);
+
+        return ResponseEntity.ok(repository.save(message));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteMessage(@PathVariable Long id) {
+        Message deletedMessage = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        repository.delete(deletedMessage);
+
+        return ResponseEntity.ok("Deleted Message");
+    }
 
 }

@@ -8,7 +8,7 @@ public class Message {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private boolean wasSeen;
+    private boolean wasSeen = false;
     private String content;
 
     @OneToOne
@@ -23,8 +23,7 @@ public class Message {
     public Message() {
     }
 
-    public Message(boolean wasSeen, String content, Collector sender, Collector receiver) {
-        this.wasSeen = wasSeen;
+    public Message(String content, Collector sender, Collector receiver) {
         this.content = content;
         this.sender = sender;
         this.receiver = receiver;

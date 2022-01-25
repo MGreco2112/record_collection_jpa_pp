@@ -11,10 +11,12 @@ public class Message {
     private boolean wasSeen = false;
     private String content;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sender_id", referencedColumnName = "id")
     private Collector sender;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "receiver_id", referencedColumnName = "id")
     private Collector receiver;
 
     //TODO add date and time

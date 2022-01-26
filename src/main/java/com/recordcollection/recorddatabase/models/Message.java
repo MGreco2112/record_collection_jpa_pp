@@ -1,6 +1,7 @@
 package com.recordcollection.recorddatabase.models;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 public class Message {
@@ -20,7 +21,7 @@ public class Message {
     private Collector receiver;
 
     //TODO add date and time
-
+    private Date dateAndTime = new Date();
 
     public Message() {
     }
@@ -69,5 +70,13 @@ public class Message {
 
     public void setReceiver(Collector receiver) {
         this.receiver = receiver;
+    }
+
+    public Date getDateAndTime() {
+        return dateAndTime;
+    }
+
+    public void setDateAndTime(Date dateAndTime) {
+        this.dateAndTime = dateAndTime;
     }
 }

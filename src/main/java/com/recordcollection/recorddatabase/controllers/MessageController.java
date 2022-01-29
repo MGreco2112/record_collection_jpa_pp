@@ -80,6 +80,22 @@ public class MessageController {
         return ResponseEntity.ok(repository.findAllBySender_idAndReceiver_id(currentCollector.get().getId(), receiver.getId()));
     }
 
+    @GetMapping("/current/all/{id}")
+    public ResponseEntity<List<Message>> getAllMessagesIncludingCurrentCollector(@PathVariable Long id) {
+        Optional<Collector> currentCollector = collectorRepository.findByUser_id(userService.getCurrentUser().getId());
+
+        if (currentCollector.isEmpty()) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        List<Message> messages = repository.findAllBySender_id(id);
+        List<Message> sentMessages = repository.findAllByReceiver_id(id);
+
+        messages.addAll(sentMessages);
+
+        return ResponseEntity.ok(messages);
+    }
+
     @PostMapping("/current/{id}")
     public ResponseEntity<Message> sendNewMessageToReceiver(@PathVariable Long id, Message message) {
         Optional<Collector> currentCollector = collectorRepository.findByUser_id(userService.getCurrentUser().getId());

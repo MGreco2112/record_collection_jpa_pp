@@ -2,6 +2,7 @@ package com.recordcollection.recorddatabase.models;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 public class Message {
@@ -10,7 +11,7 @@ public class Message {
     private Long id;
 
     private boolean wasSeen = false;
-    private String content;
+    private List<Reply> content;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sender_id", referencedColumnName = "id")
@@ -26,8 +27,7 @@ public class Message {
     public Message() {
     }
 
-    public Message(String content, Collector sender, Collector receiver) {
-        this.content = content;
+    public Message(Collector sender, Collector receiver) {
         this.sender = sender;
         this.receiver = receiver;
     }
@@ -48,11 +48,11 @@ public class Message {
         this.wasSeen = wasSeen;
     }
 
-    public String getContent() {
+    public List<Reply> getContent() {
         return content;
     }
 
-    public void setContent(String content) {
+    public void setContent(List<Reply> content) {
         this.content = content;
     }
 

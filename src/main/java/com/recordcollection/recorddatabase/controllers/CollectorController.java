@@ -219,17 +219,4 @@ public class CollectorController {
         return ResponseEntity.ok("Offer deleted");
     }
 
-    @DeleteMapping("/rejectoffer/{id}")
-    public ResponseEntity<String> rejectOfferById(@PathVariable Long id, @RequestBody Offer offer) {
-        Collector sentCollector = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        Offer selOffer = offerRepository.findById(offer.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-        selOffer.setRecord(null);
-        selOffer.setSender(null);
-        selOffer.setReceiver(null);
-
-        offerRepository.delete(selOffer);
-
-        return ResponseEntity.ok("Offer rejected");
-    }
 }

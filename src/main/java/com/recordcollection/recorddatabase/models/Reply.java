@@ -1,5 +1,7 @@
 package com.recordcollection.recorddatabase.models;
 
+
+
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 
 import javax.persistence.*;

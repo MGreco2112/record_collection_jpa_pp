@@ -56,11 +56,26 @@ public class CollectorController {
         return offerRepository.findAll();
     }
 
-    @GetMapping("/sentoffers/{id}")
-    public ResponseEntity<Set<Offer>> getOffersByCollectorId(@PathVariable Long id) {
-        Collector selCollector = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    @GetMapping("/sentoffers")
+    public ResponseEntity<Set<Offer>> getSentOffers() {
+        Optional<Collector> currentCollector = repository.findByUser_id(userService.getCurrentUser().getId());
 
-        return ResponseEntity.ok(selCollector.getSentOffers());
+        if (currentCollector.isEmpty()) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        return ResponseEntity.ok(currentCollector.get().getSentOffers());
+    }
+
+    @GetMapping("/receivedoffers")
+    public ResponseEntity<Set<Offer>> getReceivedOffers() {
+        Optional<Collector> currentCollector = repository.findByUser_id(userService.getCurrentUser().getId());
+
+        if (currentCollector.isEmpty()) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        return ResponseEntity.ok(currentCollector.get().getReceivedOffers());
     }
 
     @PostMapping

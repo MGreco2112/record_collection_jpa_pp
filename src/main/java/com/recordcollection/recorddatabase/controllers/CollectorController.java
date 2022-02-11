@@ -79,7 +79,6 @@ public class CollectorController {
     }
 
     @PostMapping
-    //TODO link auth system with posting new collector
     public ResponseEntity<Collector> createNewCollector(@RequestBody Collector collector) {
         User currentUser = userService.getCurrentUser();
 
@@ -87,16 +86,20 @@ public class CollectorController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
-        Collector newCollector = collector;
 
-        newCollector.setUser(currentUser);
+        collector.setUser(currentUser);
 
-        return ResponseEntity.ok(repository.save(newCollector));
+        return ResponseEntity.ok(repository.save(collector));
     }
 
-    @PostMapping("/comment/{id}")
-    public ResponseEntity<Collector> createNewComment(@PathVariable Long id, @RequestBody Comment comment) {
-        Collector selCollector = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    @PostMapping("/comment")
+    public ResponseEntity<Collector> createNewComment(@RequestBody Comment comment) {
+        Optional<Collector> currentCollector = repository.findByUser_id(userService.getCurrentUser().getId());
+
+        if (currentCollector.isEmpty()) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
 
         if (comment == null || comment.getRecord().getId() == null) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
@@ -106,7 +109,7 @@ public class CollectorController {
 
         Comment newComment = commentRepository.save(comment);
 
-        newComment.setCollector(selCollector);
+        newComment.setCollector(currentCollector.get());
 
         newComment.setRecord(selRecord);
 
@@ -114,71 +117,85 @@ public class CollectorController {
 
         recordRepository.save(selRecord);
 
-        return new ResponseEntity<>(repository.save(selCollector), HttpStatus.OK);
+        return new ResponseEntity<>(repository.save(currentCollector.get()), HttpStatus.OK);
     }
 
-    @PostMapping("/offers/{id}")
-    public ResponseEntity<Collector> createNewOffer(@PathVariable Long id, @RequestBody Offer offer) {
-        Collector selCollector = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    @PostMapping("/offers")
+    public ResponseEntity<Collector> createNewOffer(@RequestBody Offer offer) {
+        Optional<Collector> currentCollector = repository.findByUser_id(userService.getCurrentUser().getId());
+
+        if (currentCollector.isEmpty()) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
         Collector recCollector = repository.findById(offer.getReceiver().getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         Offer newOffer = offerRepository.save(offer);
 
-        selCollector.getSentOffers().add(newOffer);
+        currentCollector.get().getSentOffers().add(newOffer);
         recCollector.getReceivedOffers().add(newOffer);
 
         repository.save(recCollector);
 
-        return ResponseEntity.ok(repository.save(selCollector));
+        return ResponseEntity.ok(repository.save(currentCollector.get()));
     }
 
-    @PostMapping("/record/{id}")
-    public ResponseEntity<Collector> addNewRecordToCollector(@PathVariable Long id, @RequestBody Record record) {
-        Optional<Collector> selCollector = repository.findById(id);
+    @PostMapping("/record")
+    public ResponseEntity<Collector> addNewRecordToCollector(@RequestBody Record record) {
+        Optional<Collector> currentCollector = repository.findByUser_id(userService.getCurrentUser().getId());
 
-        if (selCollector.isEmpty()) {
+        if (currentCollector.isEmpty()) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
 
         recordRepository.save(record);
 
-        selCollector.get().getRecords().add(record);
+        currentCollector.get().getRecords().add(record);
 
-        return new ResponseEntity<>(repository.save(selCollector.get()), HttpStatus.OK);
+        return new ResponseEntity<>(repository.save(currentCollector.get()), HttpStatus.OK);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Collector> updateCollectorById(@PathVariable Long id, @RequestBody Collector update) {
-        Collector selCollector = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    @PutMapping
+    public ResponseEntity<Collector> updateCollectorById(@RequestBody Collector update) {
+        Optional<Collector> currentCollector = repository.findByUser_id(userService.getCurrentUser().getId());
+
+        if (currentCollector.isEmpty()) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
 
         if (update.getName() != null) {
-            selCollector.setName(update.getName());
+            currentCollector.get().setName(update.getName());
         }
         if (update.getRecords() != null) {
-            selCollector.setRecords(update.getRecords());
+            currentCollector.get().setRecords(update.getRecords());
             //if record not in repository, save to repo,
             //or do we only allow records in repo to be added?
         }
         if (update.getComments() != null) {
-            selCollector.setComments(update.getComments());
+            currentCollector.get().setComments(update.getComments());
         }
         if (update.getSentOffers() != null) {
-            selCollector.setSentOffers(update.getSentOffers());
+            currentCollector.get().setSentOffers(update.getSentOffers());
         }
         if (update.getReceivedOffers() != null) {
-            selCollector.setReceivedOffers(update.getReceivedOffers());
+            currentCollector.get().setReceivedOffers(update.getReceivedOffers());
         }
 
-        return new ResponseEntity<>(repository.save(selCollector), HttpStatus.OK);
+        return new ResponseEntity<>(repository.save(currentCollector.get()), HttpStatus.OK);
     }
 
-    @PutMapping("/acceptoffer/{id}")
-    public ResponseEntity<Collector> acceptOffer(@PathVariable Long id, @RequestBody Offer offer) {
-        Collector recCollector = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    @PutMapping("/acceptoffer")
+    public ResponseEntity<Collector> acceptOffer(@RequestBody Offer offer) {
+        Optional<Collector> currentCollector = repository.findByUser_id(userService.getCurrentUser().getId());
+
+        if (currentCollector.isEmpty()) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
         Offer selOffer = offerRepository.findById(offer.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         Collector sentCollector = repository.findById(offer.getSender().getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        recCollector.getRecords().remove(selOffer.getRecord());
+        currentCollector.get().getRecords().remove(selOffer.getRecord());
         sentCollector.getRecords().add(selOffer.getRecord());
 
         selOffer.setRecord(null);
@@ -188,7 +205,7 @@ public class CollectorController {
         offerRepository.delete(selOffer);
         repository.save(sentCollector);
 
-        return ResponseEntity.ok(repository.save(recCollector));
+        return ResponseEntity.ok(repository.save(currentCollector.get()));
     }
 
     @DeleteMapping("/delete/{id}")
@@ -200,15 +217,19 @@ public class CollectorController {
         return new ResponseEntity<>("Collector Deleted", HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/comment/{id}")
-    public ResponseEntity<String> deleteComment(@PathVariable Long id, @RequestBody Comment comment) {
-        Collector selCollector = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    @DeleteMapping("/delete/comment")
+    public ResponseEntity<String> deleteComment(@RequestBody Comment comment) {
+        Optional<Collector> currentCollector = repository.findByUser_id(userService.getCurrentUser().getId());
+
+        if (currentCollector.isEmpty()) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
 
         Record selRecord = recordRepository.findById(comment.getRecord().getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         Comment selComment = commentRepository.findById(comment.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        selCollector.getComments().remove(selComment);
+        currentCollector.get().getComments().remove(selComment);
 
         selRecord.getComments().remove(selComment);
 
@@ -217,7 +238,7 @@ public class CollectorController {
 
         commentRepository.delete(selComment);
 
-        repository.save(selCollector);
+        repository.save(currentCollector.get());
         recordRepository.save(selRecord);
 
         return new ResponseEntity<>("Comment Deleted", HttpStatus.OK);

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 public class Comment {
@@ -22,6 +23,8 @@ public class Comment {
     @JoinColumn(name = "collector_id", referencedColumnName = "id")
     @JsonIncludeProperties("name")
     private Collector collector;
+
+    private Date datePosted = new Date();
 
     public Comment() {
     }
@@ -62,5 +65,13 @@ public class Comment {
 
     public void setCollector(Collector collector) {
         this.collector = collector;
+    }
+
+    public Date getDatePosted() {
+        return datePosted;
+    }
+
+    public void setDatePosted(Date datePosted) {
+        this.datePosted = datePosted;
     }
 }

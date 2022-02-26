@@ -2,6 +2,7 @@ package com.recordcollection.recorddatabase.controllers;
 
 import com.recordcollection.recorddatabase.models.Collector;
 import com.recordcollection.recorddatabase.models.Message;
+import com.recordcollection.recorddatabase.models.Reply;
 import com.recordcollection.recorddatabase.repositories.CollectorRepository;
 import com.recordcollection.recorddatabase.repositories.MessageRepository;
 import com.recordcollection.recorddatabase.repositories.UserRepository;
@@ -127,23 +128,19 @@ public class MessageController {
     }
 
     //TODO refactor to append new reply object to replies list in Message (to be created)
-//
-//    @PutMapping("/respond/{id}")
-//    public ResponseEntity<Message> respondToMessage(@PathVariable Long id, String responseText) {
-//        Optional<Collector> currentCollector = collectorRepository.findByUser_id(userService.getCurrentUser().getId());
-//
-//        if (currentCollector.isEmpty()) {
-//            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-//        }
-//
-//        Message message = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-//
-//        message.setContent(message.getContent() + "\n" + responseText);
-//
-//        message.setDateAndTime(new Date());
-//
-//        return ResponseEntity.ok(repository.save(message));
-//    }
+
+    @PutMapping("/respond/{id}")
+    public ResponseEntity<Message> respondToMessage(@PathVariable Long id, String responseText) {
+        Message appendedMessage = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        Collector loggedInCollector = collectorRepository.findByUser_id(userService.getCurrentUser().getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        appendedMessage.getContent().add(new Reply(responseText, loggedInCollector));
+
+        collectorRepository.save(loggedInCollector);
+
+        return ResponseEntity.ok(repository.save(appendedMessage));
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteMessage(@PathVariable Long id) {

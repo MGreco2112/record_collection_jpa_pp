@@ -11,7 +11,9 @@ public class Message {
     private Long id;
 
     private boolean wasSeen = false;
-    private List<Reply> content;
+
+    //TODO add relationship mapping and comment back in setters & getters
+//    private List<Reply> content;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sender_id", referencedColumnName = "id")
@@ -48,13 +50,13 @@ public class Message {
         this.wasSeen = wasSeen;
     }
 
-    public List<Reply> getContent() {
-        return content;
-    }
-
-    public void setContent(List<Reply> content) {
-        this.content = content;
-    }
+//    public List<Reply> getContent() {
+//        return content;
+//    }
+//
+//    public void setContent(List<Reply> content) {
+//        this.content = content;
+//    }
 
     public Collector getSender() {
         return sender;

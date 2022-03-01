@@ -135,7 +135,8 @@ public class MessageController {
 
         Collector loggedInCollector = collectorRepository.findByUser_id(userService.getCurrentUser().getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        appendedMessage.getContent().add(new Reply(responseText, loggedInCollector));
+        //TODO comment this back in when reply is finished
+//        appendedMessage.getContent().add(new Reply(responseText, loggedInCollector));
 
         collectorRepository.save(loggedInCollector);
 

@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -127,7 +126,6 @@ public class MessageController {
         return ResponseEntity.ok(repository.save(unreadMessage));
     }
 
-    //TODO refactor to append new reply object to replies list in Message (to be created)
 
     @PutMapping("/respond/{id}")
     public ResponseEntity<Message> respondToMessage(@PathVariable Long id, String responseText) {

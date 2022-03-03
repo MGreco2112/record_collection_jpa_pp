@@ -12,8 +12,9 @@ public class Message {
 
     private boolean wasSeen = false;
 
-    //TODO add relationship mapping and comment back in setters & getters
-//    private List<Reply> content;
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "content_id", referencedColumnName = "id")
+    private List<Reply> content;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sender_id", referencedColumnName = "id")
@@ -50,13 +51,13 @@ public class Message {
         this.wasSeen = wasSeen;
     }
 
-//    public List<Reply> getContent() {
-//        return content;
-//    }
-//
-//    public void setContent(List<Reply> content) {
-//        this.content = content;
-//    }
+    public List<Reply> getContent() {
+        return content;
+    }
+
+    public void setContent(List<Reply> content) {
+        this.content = content;
+    }
 
     public Collector getSender() {
         return sender;

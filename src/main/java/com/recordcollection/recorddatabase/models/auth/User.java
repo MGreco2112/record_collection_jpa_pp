@@ -19,7 +19,6 @@ public class User {
     private Long id;
 
     @NotBlank
-    @Email
     private String username;
 
     @NotBlank

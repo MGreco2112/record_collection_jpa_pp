@@ -20,6 +20,7 @@ public class Record {
     private String releaseYear;
     private String numberOfTracks;
     private String[] tracks;
+    private String imageLink;
 
     @ManyToMany
     @JsonIgnoreProperties("records")
@@ -51,12 +52,13 @@ public class Record {
 
     }
 
-    public Record(String name, String nameFormatted, String releaseYear, String numberOfTracks, String[] tracks) {
+    public Record(String name, String nameFormatted, String releaseYear, String numberOfTracks, String[] tracks, String imageLink) {
         this.name = name;
         this.nameFormatted = nameFormatted;
         this.releaseYear = releaseYear;
         this.numberOfTracks = numberOfTracks;
         this.tracks = tracks;
+        this.imageLink = imageLink;
     }
 
     public Long getId() {
@@ -137,5 +139,13 @@ public class Record {
 
     public void setOffers(Set<Offer> offers) {
         this.offers = offers;
+    }
+
+    public String getImageLink() {
+        return imageLink;
+    }
+
+    public void setImageLink(String imageLink) {
+        this.imageLink = imageLink;
     }
 }

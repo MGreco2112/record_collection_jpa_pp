@@ -96,6 +96,9 @@ public class RecordController {
         if (update.getArtists() != null) {
             selRecord.setArtists(update.getArtists());
         }
+        if (update.getImageLink() != null) {
+            selRecord.setImageLink(update.getImageLink());
+        }
 
         return new ResponseEntity<>(repository.save(selRecord), HttpStatus.OK);
     }

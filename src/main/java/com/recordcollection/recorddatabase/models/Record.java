@@ -15,7 +15,6 @@ public class Record {
     private Long id;
 
     private String name;
-    @JsonIgnore
     private String nameFormatted;
     private String releaseYear;
     private String numberOfTracks;

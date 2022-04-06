@@ -51,6 +51,14 @@ public class RecordController {
         return artistRepository.findAllByArtistNameFormatted(name, Sort.by("artistName"));
     }
 
+    @GetMapping("/artistByRecord/{record}")
+    public Set<Artist> getArtistByRecord(@PathVariable Long record) {
+        Record selRecord = repository.findById(record).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+
+        return selRecord.getArtists();
+    }
+
     @PostMapping
     public ResponseEntity<Record> addRecord(@RequestBody Record record) {
         return new ResponseEntity<>(repository.save(record), HttpStatus.CREATED);

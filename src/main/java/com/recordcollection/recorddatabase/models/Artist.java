@@ -13,7 +13,6 @@ public class Artist {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String artistName;
-    @JsonIgnore
     private String artistNameFormatted;
     private String[] members;
     @ManyToMany

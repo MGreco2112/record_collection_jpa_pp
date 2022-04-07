@@ -4,7 +4,6 @@ import com.recordcollection.recorddatabase.models.Artist;
 import com.recordcollection.recorddatabase.models.Record;
 import com.recordcollection.recorddatabase.repositories.ArtistRepository;
 import com.recordcollection.recorddatabase.repositories.RecordRepository;
-import org.aspectj.util.GenericSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -12,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -52,11 +50,11 @@ public class RecordController {
     }
 
     @GetMapping("/artistByRecord/{record}")
-    public Set<Artist> getArtistByRecord(@PathVariable Long record) {
+    public Artist getArtistByRecord(@PathVariable Long record) {
         Record selRecord = repository.findById(record).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
 
-        return selRecord.getArtists();
+        return selRecord.getArtist();
     }
 
     @PostMapping
@@ -69,15 +67,21 @@ public class RecordController {
         return new ResponseEntity<>(artistRepository.save(artist), HttpStatus.CREATED);
     }
 
-    @PostMapping("/artist/{id}")
-    public ResponseEntity<Record> addArtistsToRecord(@PathVariable Long id, @RequestBody Set<Artist> artists) {
-        Optional<Record> selRecord = repository.findById(id);
+    @PostMapping("/artist/{recordId}&&{artistId}")
+    public ResponseEntity<Record> addArtistsToRecord(@PathVariable Long recordId, @PathVariable Long artistId) {
+        Optional<Record> selRecord = repository.findById(recordId);
+
+        Artist selArtist = artistRepository.findById(artistId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         if (selRecord.isEmpty()) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
 
-        selRecord.get().setArtists(artists);
+        selArtist.getRecords().add(selRecord.get());
+
+        selRecord.get().setArtist(selArtist);
+
+        artistRepository.save(selArtist);
 
         return new ResponseEntity<>(repository.save(selRecord.get()), HttpStatus.OK);
     }
@@ -101,8 +105,8 @@ public class RecordController {
         if (update.getTracks() != null) {
             selRecord.setTracks(update.getTracks());
         }
-        if (update.getArtists() != null) {
-            selRecord.setArtists(update.getArtists());
+        if (update.getArtist() != null) {
+            selRecord.setArtist(update.getArtist());
         }
         if (update.getImageLink() != null) {
             selRecord.setImageLink(update.getImageLink());
@@ -148,7 +152,7 @@ public class RecordController {
     public ResponseEntity<Record> removeArtistsFromRecord(@PathVariable Long id) {
         Record selRecord = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        selRecord.setArtists(null);
+        selRecord.setArtist(null);
 
         return new ResponseEntity<>(repository.save(selRecord), HttpStatus.OK);
     }

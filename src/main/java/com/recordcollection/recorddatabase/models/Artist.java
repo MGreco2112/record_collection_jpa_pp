@@ -15,13 +15,10 @@ public class Artist {
     private String artistName;
     private String artistNameFormatted;
     private String[] members;
-    @ManyToMany
-    @JsonIgnoreProperties({"artists", "comments"})
-    @JoinTable(
-            name = "artist_record",
-            joinColumns = @JoinColumn(name = "artist_id"),
-            inverseJoinColumns = @JoinColumn(name = "record_id")
-    )
+
+    @OneToMany
+    @JoinColumn(name = "record_id", referencedColumnName = "id")
+    @JsonIgnoreProperties({"artist", "comments"})
     private Set<Record> records;
 
     public Artist() {

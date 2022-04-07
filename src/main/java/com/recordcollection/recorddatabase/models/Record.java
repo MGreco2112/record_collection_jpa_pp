@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 
 import javax.persistence.*;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -21,14 +20,10 @@ public class Record {
     private String[] tracks;
     private String imageLink;
 
-    @ManyToMany
+    @ManyToOne
+    @JoinColumn(name = "artist_id", referencedColumnName = "id")
     @JsonIgnoreProperties("records")
-    @JoinTable(
-            name = "artist_record",
-            joinColumns = @JoinColumn(name = "record_id"),
-            inverseJoinColumns = @JoinColumn(name = "artist_id")
-    )
-    private Set<Artist> artists;
+    private Artist artist;
 
     @ManyToMany
     @JsonIncludeProperties({"id", "name"})
@@ -108,12 +103,12 @@ public class Record {
         this.tracks = tracks;
     }
 
-    public Set<Artist> getArtists() {
-        return artists;
+    public Artist getArtist() {
+        return artist;
     }
 
-    public void setArtists(Set<Artist> artists) {
-        this.artists = artists;
+    public void setArtist(Artist artist) {
+        this.artist = artist;
     }
 
     public Set<Collector> getCollectors() {

@@ -31,7 +31,7 @@ public class RecordController {
 
     @GetMapping("/artists")
     public List<Artist> getAllArtists() {
-        return artistRepository.findAll();
+        return artistRepository.getAllArtistsSorted();
     }
 
     @GetMapping("/{id}")
@@ -45,8 +45,14 @@ public class RecordController {
     }
 
     @GetMapping("/artist/{name}")
-    public List<Artist> getArtistsByName(@PathVariable String name) {
-        return artistRepository.findAllByArtistNameFormatted(name, Sort.by("artistName"));
+    public ResponseEntity<Artist> getArtistsByName(@PathVariable String name) {
+        Artist selArtist = artistRepository.findByArtistNameFormatted(name);
+
+        if (selArtist == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        return ResponseEntity.ok(selArtist);
     }
 
     @GetMapping("/artistByRecord/{record}")

@@ -140,17 +140,21 @@ public class CollectorController {
         return ResponseEntity.ok(repository.save(currentCollector.get()));
     }
 
-    @PostMapping("/record")
-    public ResponseEntity<Collector> addNewRecordToCollector(@RequestBody Record record) {
+    @PutMapping("/record/{id}")
+    public ResponseEntity<Collector> addNewRecordToCollector(@PathVariable Long id) {
         Optional<Collector> currentCollector = repository.findByUser_id(userService.getCurrentUser().getId());
 
         if (currentCollector.isEmpty()) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
 
-        recordRepository.save(record);
+        Record selRecord = recordRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        currentCollector.get().getRecords().add(record);
+        selRecord.getCollectors().add(currentCollector.get());
+
+        currentCollector.get().getRecords().add(selRecord);
+
+        recordRepository.save(selRecord);
 
         return new ResponseEntity<>(repository.save(currentCollector.get()), HttpStatus.OK);
     }

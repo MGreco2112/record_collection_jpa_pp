@@ -26,7 +26,7 @@ public class RecordController {
 
     @GetMapping
     public List<Record> getAllRecords() {
-        return repository.findAll();
+        return repository.getAllRecordsSorted();
     }
 
     @GetMapping("/artists")

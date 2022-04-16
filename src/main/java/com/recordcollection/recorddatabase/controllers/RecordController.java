@@ -63,6 +63,17 @@ public class RecordController {
         return selRecord.getArtist();
     }
 
+    @GetMapping("/recordsByArtist/{artistNameFormatted}")
+    public ResponseEntity<List<Record>> recordsByArtist(@PathVariable String artistNameFormatted) {
+        Artist selArtist = artistRepository.findByArtistNameFormatted(artistNameFormatted);
+
+        if (selArtist == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        return ResponseEntity.ok(repository.getAllRecordsByArtist(selArtist.getId()));
+    }
+
     @PostMapping
     public ResponseEntity<Record> addRecord(@RequestBody Record record) {
         return new ResponseEntity<>(repository.save(record), HttpStatus.CREATED);

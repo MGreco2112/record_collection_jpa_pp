@@ -39,9 +39,15 @@ public class RecordController {
         return new ResponseEntity<>(repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)), HttpStatus.OK);
     }
 
-    @GetMapping("/byName/{name}")
-    public List<Record> getRecordsByName(@PathVariable String name) {
-        return repository.getAllRecordsByNameFormatted(name, Sort.by("name"));
+    @GetMapping("/release/{name}")
+    public ResponseEntity<Record> getRecordsByName(@PathVariable String name) {
+        Record selRecord = repository.getRecordByNameFormatted(name);
+
+        if (selRecord == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        return ResponseEntity.ok(selRecord);
     }
 
     @GetMapping("/artist/{name}")

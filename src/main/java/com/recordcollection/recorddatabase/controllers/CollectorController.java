@@ -41,6 +41,19 @@ public class CollectorController {
         return repository.findAll();
     }
 
+    @GetMapping("/currentCollector")
+    public ResponseEntity<Collector> getLoggedInCollector() {
+        User currentUser = userService.getCurrentUser();
+
+        if (currentUser == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        Collector currentCollector = repository.findByUser_id(currentUser.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        return ResponseEntity.ok(currentCollector);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Collector> getCollectorById(@PathVariable Long id) {
         return new ResponseEntity<>(repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)), HttpStatus.OK);

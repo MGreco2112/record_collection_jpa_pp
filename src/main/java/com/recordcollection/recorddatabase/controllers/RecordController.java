@@ -80,6 +80,16 @@ public class RecordController {
         return ResponseEntity.ok(repository.getAllRecordsByArtist(selArtist.getId()));
     }
 
+    @GetMapping("/search/name/{query}")
+    public List<Record> recordsByNameSearchQuery(@PathVariable String query) {
+        return repository.getAllRecordsByNameQuery(query);
+    }
+
+    @GetMapping("/search/artist_name/{query}")
+    public List<Artist> artistsByNameSearchQuery(@PathVariable String query) {
+        return artistRepository.getArtistsByNameQuery(query);
+    }
+
     @PostMapping
     public ResponseEntity<Record> addRecord(@RequestBody Record record) {
         return new ResponseEntity<>(repository.save(record), HttpStatus.CREATED);

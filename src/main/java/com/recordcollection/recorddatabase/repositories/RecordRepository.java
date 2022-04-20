@@ -22,4 +22,7 @@ public interface RecordRepository extends JpaRepository<Record, Long> {
 
     @Query(value = "SELECT * FROM record WHERE artist_id = :id ORDER BY name ASC", nativeQuery = true)
     List<Record> getAllRecordsByArtist(@Param("id") Long id);
+
+    @Query(value = "SELECT * FROM record WHERE name LIKE %:query% ORDER BY name ASC", nativeQuery = true)
+    List<Record> getAllRecordsByNameQuery(@Param("query") String query);
 }

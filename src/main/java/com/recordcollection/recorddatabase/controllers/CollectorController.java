@@ -5,10 +5,7 @@ import com.recordcollection.recorddatabase.models.Comment;
 import com.recordcollection.recorddatabase.models.Offer;
 import com.recordcollection.recorddatabase.models.Record;
 import com.recordcollection.recorddatabase.models.auth.User;
-import com.recordcollection.recorddatabase.repositories.CollectorRepository;
-import com.recordcollection.recorddatabase.repositories.CommentRepository;
-import com.recordcollection.recorddatabase.repositories.OfferRepository;
-import com.recordcollection.recorddatabase.repositories.RecordRepository;
+import com.recordcollection.recorddatabase.repositories.*;
 import com.recordcollection.recorddatabase.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -24,15 +21,17 @@ import java.util.*;
 @RequestMapping("/api/collectors")
 public class CollectorController {
     @Autowired
-    CollectorRepository repository;
+    private CollectorRepository repository;
     @Autowired
-    RecordRepository recordRepository;
+    private RecordRepository recordRepository;
     @Autowired
-    CommentRepository commentRepository;
+    private CommentRepository commentRepository;
     @Autowired
-    OfferRepository offerRepository;
+    private OfferRepository offerRepository;
     @Autowired
-    UserService userService;
+    private UserService userService;
+    @Autowired
+    private UserRepository userRepository;
 
     //TODO Connect User Service to methods that use ID to get Current Logged In Collector
 
@@ -52,6 +51,23 @@ public class CollectorController {
         Collector currentCollector = repository.findByUser_id(currentUser.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         return ResponseEntity.ok(currentCollector);
+    }
+
+    @GetMapping("/username/{username}")
+    public ResponseEntity<Collector> getCollectorByUsername(@PathVariable String username) {
+        Optional<User> selUser = userRepository.findByUsername(username);
+
+        if (selUser.isEmpty()) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        Optional<Collector> selCollector = repository.findByUser_id(selUser.get().getId());
+
+        if (selCollector.isEmpty()) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        return ResponseEntity.ok(selCollector.get());
     }
 
     @GetMapping("/{id}")

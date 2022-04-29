@@ -176,23 +176,33 @@ public class CollectorController {
         return ResponseEntity.ok(repository.save(currentCollector.get()));
     }
 
-    @PutMapping("/record/{id}")
-    public ResponseEntity<Collector> addNewRecordToCollector(@PathVariable Long id) {
-        Optional<Collector> currentCollector = repository.findByUser_id(userService.getCurrentUser().getId());
+    //TODO fix this
+    @PostMapping("/record/{id}")
+    public ResponseEntity<String> addRecordToCollectorById(@PathVariable Long id) {
+        User user = userService.getCurrentUser();
 
-        if (currentCollector.isEmpty()) {
+        if (user == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        Optional<Collector> selCollector = repository.findByUser_id(user.getId());
+
+        if (selCollector.isEmpty()) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
 
         Record selRecord = recordRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        selRecord.getCollectors().add(currentCollector.get());
+        if (selCollector.get().getRecords().contains(selRecord)) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        selCollector.get().getRecords().add(selRecord);
+        selRecord.getCollectors().add(selCollector.get());
 
-        currentCollector.get().getRecords().add(selRecord);
-
+        repository.save(selCollector.get());
         recordRepository.save(selRecord);
 
-        return new ResponseEntity<>(repository.save(currentCollector.get()), HttpStatus.OK);
+        return ResponseEntity.ok("Record Added To Collector");
     }
 
     @PutMapping
@@ -255,6 +265,31 @@ public class CollectorController {
         repository.delete(delCollector);
 
         return new ResponseEntity<>("Collector Deleted", HttpStatus.OK);
+    }
+
+    @DeleteMapping("/delete/record/{id}")
+    public ResponseEntity<String> removeRecordFromCollector(@PathVariable Long id) {
+        User user = userService.getCurrentUser();
+
+        if (user == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        Optional<Collector> selCollector = repository.findByUser_id(user.getId());
+
+        if (selCollector.isEmpty()) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        Record selRecord = recordRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        selCollector.get().getRecords().remove(selRecord);
+        selRecord.getCollectors().remove(selCollector.get());
+
+        repository.save(selCollector.get());
+        recordRepository.save(selRecord);
+
+        return ResponseEntity.ok("Record Removed");
     }
 
     @DeleteMapping("/delete/comment")

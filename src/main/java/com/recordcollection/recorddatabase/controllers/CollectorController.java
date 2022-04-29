@@ -107,6 +107,13 @@ public class CollectorController {
         return ResponseEntity.ok(currentCollector.get().getReceivedOffers());
     }
 
+    @GetMapping("/user/{collectorId}")
+    public ResponseEntity<User> getUserFromCollectorId(@PathVariable Long collectorId) {
+        Collector selCollector = repository.findById(collectorId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        return ResponseEntity.ok(selCollector.getUser());
+    }
+
     @PostMapping
     public ResponseEntity<Collector> createNewCollector(@RequestBody Collector collector) {
         User currentUser = userService.getCurrentUser();

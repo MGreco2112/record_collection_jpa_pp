@@ -142,4 +142,8 @@ public class Record {
     public void setImageLink(String imageLink) {
         this.imageLink = imageLink;
     }
+
+    public String toString() {
+        return "{ id: " + id + ", name: " + name + " }";
+    }
 }

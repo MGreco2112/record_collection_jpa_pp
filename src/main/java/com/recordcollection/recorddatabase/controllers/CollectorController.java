@@ -196,6 +196,10 @@ public class CollectorController {
         if (selCollector.get().getRecords().contains(selRecord)) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
+
+        System.out.println(Arrays.toString(selCollector.get().getRecords().toArray()));
+        System.out.println(Arrays.toString(selRecord.getCollectors().toArray()));
+
         selCollector.get().getRecords().add(selRecord);
         selRecord.getCollectors().add(selCollector.get());
 

@@ -109,4 +109,8 @@ public class Collector {
     public void setUser(User user) {
         this.user = user;
     }
+
+    public String toString() {
+        return "{ id: " + id + ", name: " + name + " }";
+    }
 }

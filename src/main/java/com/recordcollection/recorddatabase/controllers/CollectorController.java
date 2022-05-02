@@ -7,13 +7,19 @@ import com.recordcollection.recorddatabase.models.Record;
 import com.recordcollection.recorddatabase.models.auth.User;
 import com.recordcollection.recorddatabase.repositories.*;
 import com.recordcollection.recorddatabase.services.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.util.*;
 
 @CrossOrigin
@@ -32,6 +38,18 @@ public class CollectorController {
     private UserService userService;
     @Autowired
     private UserRepository userRepository;
+
+    @Value("${Spring.datasource.driver-class-name}")
+    private String myDriver;
+
+    @Value("${Spring.datasource.url}")
+    private String myUrl;
+
+    @Value("${Spring.datasource.username}")
+    private String username;
+
+    @Value("${Spring.datasource.password}")
+    private String password;
 
     //TODO Connect User Service to methods that use ID to get Current Logged In Collector
 
@@ -177,8 +195,8 @@ public class CollectorController {
     }
 
     //TODO fix this
-    @PostMapping("/record/{id}")
-    public ResponseEntity<String> addRecordToCollectorById(@PathVariable Long id) {
+    @PostMapping("/record/add")
+    public ResponseEntity<String> addRecordToCollectorById(@RequestBody Record recordId) {
         User user = userService.getCurrentUser();
 
         if (user == null) {
@@ -191,20 +209,29 @@ public class CollectorController {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
 
-        Record selRecord = recordRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Record selRecord = recordRepository.findById(recordId.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         if (selCollector.get().getRecords().contains(selRecord)) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
-        System.out.println(Arrays.toString(selCollector.get().getRecords().toArray()));
-        System.out.println(Arrays.toString(selRecord.getCollectors().toArray()));
 
-        selCollector.get().getRecords().add(selRecord);
-        selRecord.getCollectors().add(selCollector.get());
+        try {
+            Connection conn = DriverManager.getConnection(myUrl, username, password);
+            Class.forName(myDriver);
+            String query = "INSERT INTO collector_record (record_id, collector_id) VALUES (?, ?)";
+            PreparedStatement statement = conn.prepareStatement(query);
 
-        repository.save(selCollector.get());
-        recordRepository.save(selRecord);
+            statement.setString(1, Long.toString(selRecord.getId()));
+            statement.setString(2, Long.toString(selCollector.get().getId()));
+
+            statement.executeUpdate();
+
+        } catch (Exception e) {
+            Logger logger = LoggerFactory.getLogger(CollectorController.class);
+            System.out.println(e.getMessage());
+
+        }
 
         return ResponseEntity.ok("Record Added To Collector");
     }

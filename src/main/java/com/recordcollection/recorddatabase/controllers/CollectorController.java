@@ -159,7 +159,11 @@ public class CollectorController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
-        Record selRecord = recordRepository.findById(comment.getRecord().getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Record selRecord = recordRepository.getRecordByName(comment.getRecord().getName());
+
+        if (selRecord == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
 
         Comment newComment = commentRepository.save(comment);
 
@@ -194,7 +198,6 @@ public class CollectorController {
         return ResponseEntity.ok(repository.save(currentCollector.get()));
     }
 
-    //TODO fix this
     @PostMapping("/record/add")
     public ResponseEntity<String> addRecordToCollectorById(@RequestBody Record recordId) {
         User user = userService.getCurrentUser();

@@ -154,8 +154,7 @@ public class CollectorController {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
 
-
-        if (comment == null || comment.getRecord().getId() == null) {
+        if (comment == null || comment.getRecord().getName() == null) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
@@ -165,15 +164,25 @@ public class CollectorController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
-        Comment newComment = commentRepository.save(comment);
+        for (Comment selComment : currentCollector.get().getComments()) {
+            if (Objects.equals(selComment.getRecord().getId(), selRecord.getId())) {
+                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            }
+        }
 
-        newComment.setCollector(currentCollector.get());
+        currentCollector.get().getComments().add(comment);
 
-        newComment.setRecord(selRecord);
+        comment.setCollector(currentCollector.get());
 
-        selRecord.getComments().add(newComment);
+        comment.setRecord(selRecord);
+
+        selRecord.getComments().add(comment);
+
+        repository.save(currentCollector.get());
 
         recordRepository.save(selRecord);
+
+        commentRepository.save(comment);
 
         return new ResponseEntity<>(repository.save(currentCollector.get()), HttpStatus.OK);
     }
@@ -326,17 +335,17 @@ public class CollectorController {
         return ResponseEntity.ok("Record Removed");
     }
 
-    @DeleteMapping("/delete/comment")
-    public ResponseEntity<String> deleteComment(@RequestBody Comment comment) {
+    @DeleteMapping("/delete/comment/{id}")
+    public ResponseEntity<String> deleteComment(@PathVariable Long id) {
         Optional<Collector> currentCollector = repository.findByUser_id(userService.getCurrentUser().getId());
 
         if (currentCollector.isEmpty()) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
 
-        Record selRecord = recordRepository.findById(comment.getRecord().getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Record selRecord = recordRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        Comment selComment = commentRepository.findById(comment.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Comment selComment = commentRepository.getCommentByCollectorAndRecordIds(currentCollector.get().getId(), selRecord.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         currentCollector.get().getComments().remove(selComment);
 

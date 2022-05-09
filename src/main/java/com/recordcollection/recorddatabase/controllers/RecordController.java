@@ -2,6 +2,7 @@ package com.recordcollection.recorddatabase.controllers;
 
 import com.recordcollection.recorddatabase.models.Artist;
 import com.recordcollection.recorddatabase.models.Record;
+import com.recordcollection.recorddatabase.payloads.request.ArtistAddRequest;
 import com.recordcollection.recorddatabase.repositories.ArtistRepository;
 import com.recordcollection.recorddatabase.repositories.RecordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,6 +91,13 @@ public class RecordController {
         return artistRepository.getArtistsByNameQuery(query);
     }
 
+    @GetMapping("/artistExists/{name}")
+    public ResponseEntity<List<Artist>> artistExistsByName(@PathVariable String name) {
+        List<Artist> artists = artistRepository.checkArtistExists(name);
+
+        return ResponseEntity.ok(artists);
+    }
+
     @PostMapping
     public ResponseEntity<Record> addRecord(@RequestBody Record record) {
         return new ResponseEntity<>(repository.save(record), HttpStatus.CREATED);
@@ -100,11 +108,11 @@ public class RecordController {
         return new ResponseEntity<>(artistRepository.save(artist), HttpStatus.CREATED);
     }
 
-    @PostMapping("/artist/{recordId}&&{artistId}")
-    public ResponseEntity<Record> addArtistsToRecord(@PathVariable Long recordId, @PathVariable Long artistId) {
-        Optional<Record> selRecord = repository.findById(recordId);
+    @PostMapping("/artistAdd")
+    public ResponseEntity<Record> addArtistsToRecord(@RequestBody ArtistAddRequest info) {
+        Optional<Record> selRecord = repository.findById(info.getRecordId());
 
-        Artist selArtist = artistRepository.findById(artistId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Artist selArtist = artistRepository.findById(info.getArtistId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         if (selRecord.isEmpty()) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);

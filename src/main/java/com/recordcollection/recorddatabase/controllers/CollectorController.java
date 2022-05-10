@@ -51,7 +51,6 @@ public class CollectorController {
     @Value("${Spring.datasource.password}")
     private String password;
 
-    //TODO Connect User Service to methods that use ID to get Current Logged In Collector
 
     @GetMapping
     public List<Collector> getAllCollectors() {

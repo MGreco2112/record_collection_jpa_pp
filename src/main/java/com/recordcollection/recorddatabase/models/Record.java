@@ -29,8 +29,8 @@ public class Record {
     @JsonIncludeProperties({"id", "name"})
     @JoinTable(
             name = "collector_record",
-            joinColumns = @JoinColumn(name = "record_id"),
-            inverseJoinColumns = @JoinColumn(name = "collector_id")
+            joinColumns = @JoinColumn(name = "record_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "collector_id", referencedColumnName = "id")
     )
     private Set<Collector> collectors;
 

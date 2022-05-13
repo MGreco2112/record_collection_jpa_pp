@@ -226,7 +226,6 @@ public class CollectorController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
-
         try {
             Connection conn = DriverManager.getConnection(myUrl, username, password);
             Class.forName(myDriver);

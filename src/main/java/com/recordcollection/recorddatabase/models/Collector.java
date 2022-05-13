@@ -20,8 +20,8 @@ public class Collector {
     @JsonIgnoreProperties({"collectors", "comments"})
     @JoinTable(
             name = "collector_record",
-            joinColumns = @JoinColumn(name = "collector_id"),
-            inverseJoinColumns = @JoinColumn(name = "record_id")
+            joinColumns = @JoinColumn(name = "collector_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "record_id", referencedColumnName = "id")
     )
     private Set<Record> records;
 

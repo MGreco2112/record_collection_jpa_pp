@@ -3,6 +3,7 @@ package com.recordcollection.recorddatabase.controllers;
 import com.recordcollection.recorddatabase.models.Artist;
 import com.recordcollection.recorddatabase.models.Record;
 import com.recordcollection.recorddatabase.payloads.request.ArtistAddRequest;
+import com.recordcollection.recorddatabase.payloads.response.EditArtistResponse;
 import com.recordcollection.recorddatabase.repositories.ArtistRepository;
 import com.recordcollection.recorddatabase.repositories.RecordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -60,6 +62,15 @@ public class RecordController {
         }
 
         return ResponseEntity.ok(selArtist);
+    }
+
+    @GetMapping("/artistToEdit/{id}")
+    public ResponseEntity<EditArtistResponse> getEditArtistByName(@PathVariable Long id) {
+        Artist selArtist = artistRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        EditArtistResponse newResponse = new EditArtistResponse(selArtist.getId(), selArtist.getArtistName(), Arrays.asList(selArtist.getMembers()));
+
+        return ResponseEntity.ok(newResponse);
     }
 
     @GetMapping("/artistByRecord/{record}")

@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -50,6 +51,9 @@ public class CollectorController {
 
     @Value("${Spring.datasource.password}")
     private String password;
+
+    @Autowired
+    private PasswordEncoder encoder;
 
 
     @GetMapping
@@ -259,8 +263,6 @@ public class CollectorController {
         }
         if (update.getRecords() != null) {
             currentCollector.get().setRecords(update.getRecords());
-            //if record not in repository, save to repo,
-            //or do we only allow records in repo to be added?
         }
         if (update.getComments() != null) {
             currentCollector.get().setComments(update.getComments());
@@ -273,6 +275,25 @@ public class CollectorController {
         }
 
         return new ResponseEntity<>(repository.save(currentCollector.get()), HttpStatus.OK);
+    }
+
+    @PutMapping("/user")
+    public ResponseEntity<User> updateCurrentUser(@RequestBody User updates) {
+        User selUser = userService.getCurrentUser();
+
+        if (selUser == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        if (updates.getUsername() != null) {
+            selUser.setUsername(updates.getUsername());
+        }
+
+        if (updates.getPassword() != null) {
+            selUser.setPassword(encoder.encode(updates.getPassword()));
+        }
+
+        return ResponseEntity.ok(userRepository.save(selUser));
     }
 
     @PutMapping("/acceptoffer")

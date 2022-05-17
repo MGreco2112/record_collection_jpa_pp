@@ -289,7 +289,7 @@ public class CollectorController {
             selUser.setUsername(updates.getUsername());
         }
 
-        if (updates.getPassword() != null) {
+        if (updates.getPassword() != null && !Objects.equals(updates.getPassword(), "") && !Objects.equals(updates.getPassword(), selUser.getPassword())) {
             selUser.setPassword(encoder.encode(updates.getPassword()));
         }
 

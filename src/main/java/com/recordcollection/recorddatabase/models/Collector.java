@@ -23,6 +23,7 @@ public class Collector {
             joinColumns = @JoinColumn(name = "collector_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "record_id", referencedColumnName = "id")
     )
+    @OrderBy("name ASC")
     private Set<Record> records;
 
     @OneToMany(mappedBy = "collector", fetch = FetchType.LAZY)

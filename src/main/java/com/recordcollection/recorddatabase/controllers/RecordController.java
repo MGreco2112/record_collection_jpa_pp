@@ -1,10 +1,14 @@
 package com.recordcollection.recorddatabase.controllers;
 
 import com.recordcollection.recorddatabase.models.Artist;
+import com.recordcollection.recorddatabase.models.Collector;
+import com.recordcollection.recorddatabase.models.Comment;
 import com.recordcollection.recorddatabase.models.Record;
 import com.recordcollection.recorddatabase.payloads.request.ArtistAddRequest;
 import com.recordcollection.recorddatabase.payloads.response.EditArtistResponse;
 import com.recordcollection.recorddatabase.repositories.ArtistRepository;
+import com.recordcollection.recorddatabase.repositories.CollectorRepository;
+import com.recordcollection.recorddatabase.repositories.CommentRepository;
 import com.recordcollection.recorddatabase.repositories.RecordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -26,6 +30,10 @@ public class RecordController {
     private RecordRepository repository;
     @Autowired
     private ArtistRepository artistRepository;
+    @Autowired
+    private CollectorRepository collectorRepository;
+    @Autowired
+    private CommentRepository commentRepository;
 
     @GetMapping
     public List<Record> getAllRecords() {
@@ -194,6 +202,32 @@ public class RecordController {
         if (selRecord.isEmpty()) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
+
+        Optional<Artist> selArtist = artistRepository.findById(selRecord.get().getArtist().getId());
+
+        if (selArtist.isEmpty()) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        selArtist.get().getRecords().remove(selRecord.get());
+
+        selRecord.get().setArtist(null);
+
+        selRecord.get().getCollectors().clear();
+
+        for (Collector collector : selRecord.get().getCollectors()) {
+            collector.getRecords().remove(selRecord.get());
+
+            collectorRepository.save(collector);
+        }
+
+        for (Comment comment : selRecord.get().getComments()) {
+            comment.setRecord(null);
+
+            commentRepository.save(comment);
+        }
+
+        repository.save(selRecord.get());
 
         repository.delete(selRecord.get());
 

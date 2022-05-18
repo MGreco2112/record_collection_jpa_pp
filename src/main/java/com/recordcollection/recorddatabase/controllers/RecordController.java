@@ -224,7 +224,11 @@ public class RecordController {
         for (Comment comment : selRecord.get().getComments()) {
             comment.setRecord(null);
 
+            selRecord.get().getComments().remove(comment);
+
             commentRepository.save(comment);
+
+            commentRepository.delete(comment);
         }
 
         repository.save(selRecord.get());

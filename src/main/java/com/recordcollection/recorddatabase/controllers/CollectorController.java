@@ -4,7 +4,11 @@ import com.recordcollection.recorddatabase.models.Collector;
 import com.recordcollection.recorddatabase.models.Comment;
 import com.recordcollection.recorddatabase.models.Offer;
 import com.recordcollection.recorddatabase.models.Record;
+import com.recordcollection.recorddatabase.models.auth.ERole;
+import com.recordcollection.recorddatabase.models.auth.Role;
 import com.recordcollection.recorddatabase.models.auth.User;
+import com.recordcollection.recorddatabase.payloads.request.UpdateCollectorRequest;
+import com.recordcollection.recorddatabase.payloads.request.UpdateUserRequest;
 import com.recordcollection.recorddatabase.repositories.*;
 import com.recordcollection.recorddatabase.services.UserService;
 import org.slf4j.Logger;
@@ -39,6 +43,8 @@ public class CollectorController {
     private UserService userService;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private RoleRepository roleRepository;
 
     @Value("${Spring.datasource.driver-class-name}")
     private String myDriver;
@@ -251,7 +257,7 @@ public class CollectorController {
     }
 
     @PutMapping
-    public ResponseEntity<Collector> updateCollectorById(@RequestBody Collector update) {
+    public ResponseEntity<Collector> updateCollectorById(@RequestBody UpdateCollectorRequest update) {
         Optional<Collector> currentCollector = repository.findByUser_id(userService.getCurrentUser().getId());
 
         if (currentCollector.isEmpty()) {
@@ -262,7 +268,19 @@ public class CollectorController {
             currentCollector.get().setName(update.getName());
         }
         if (update.getRecords() != null) {
-            currentCollector.get().setRecords(update.getRecords());
+            Set<Record> newRecords = new HashSet<>();
+
+            for (String record : update.getRecords()) {
+                Record selRecord = recordRepository.getRecordByName(record);
+
+                if (selRecord == null) {
+                    return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+                }
+
+                newRecords.add(selRecord);
+            }
+
+            currentCollector.get().setRecords(newRecords);
         }
         if (update.getComments() != null) {
             currentCollector.get().setComments(update.getComments());
@@ -278,7 +296,7 @@ public class CollectorController {
     }
 
     @PutMapping("/user")
-    public ResponseEntity<User> updateCurrentUser(@RequestBody User updates) {
+    public ResponseEntity<User> updateCurrentUser(@RequestBody UpdateUserRequest updates) {
         User selUser = userService.getCurrentUser();
 
         if (selUser == null) {
@@ -291,6 +309,38 @@ public class CollectorController {
 
         if (updates.getPassword() != null && !Objects.equals(updates.getPassword(), "") && !Objects.equals(updates.getPassword(), selUser.getPassword())) {
             selUser.setPassword(encoder.encode(updates.getPassword()));
+        }
+
+        if (updates.getRoles() != null) {
+            Set<Role> roles = new HashSet<>();
+
+            updates.getRoles().forEach(role -> {
+                switch(role) {
+                    case "admin":
+                        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+                                .orElseThrow(() -> new RuntimeException("Error: Role is not found"));
+                        roles.add(adminRole);
+
+                        break;
+                    case "artist":
+                        Role artistRole = roleRepository.findByName(ERole.ROLE_ARTIST)
+                                .orElseThrow(() -> new RuntimeException("Error: Role is not found"));
+                        roles.add(artistRole);
+                        break;
+                    case "mod":
+                        Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
+                                .orElseThrow(() -> new RuntimeException("Error: Role is not found"));
+                        roles.add(modRole);
+
+                        break;
+                    default:
+                        Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+                                .orElseThrow(() -> new RuntimeException("Error: Role is not found"));
+                        roles.add(userRole);
+                }
+            });
+
+            selUser.setRoles(roles);
         }
 
         return ResponseEntity.ok(userRepository.save(selUser));

@@ -7,6 +7,7 @@ import com.recordcollection.recorddatabase.models.Record;
 import com.recordcollection.recorddatabase.models.auth.ERole;
 import com.recordcollection.recorddatabase.models.auth.Role;
 import com.recordcollection.recorddatabase.models.auth.User;
+import com.recordcollection.recorddatabase.payloads.request.EditCollectorRequest;
 import com.recordcollection.recorddatabase.payloads.request.UpdateCollectorRequest;
 import com.recordcollection.recorddatabase.payloads.request.UpdateUserRequest;
 import com.recordcollection.recorddatabase.repositories.*;
@@ -78,6 +79,29 @@ public class CollectorController {
         Collector currentCollector = repository.findByUser_id(currentUser.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         return ResponseEntity.ok(currentCollector);
+    }
+
+    @GetMapping("/formattedCollector")
+    public ResponseEntity<EditCollectorRequest> editCurrentCollector() {
+        User currentUser = userService.getCurrentUser();
+
+        if (currentUser == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        Collector currentCollector = repository.findByUser_id(currentUser.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        EditCollectorRequest request = new EditCollectorRequest(currentCollector.getName());
+
+        for (Record record : currentCollector.getRecords()) {
+            request.getRecords().add(record.getName());
+        }
+
+        for (Comment comment : currentCollector.getComments()) {
+            request.getComments().add(comment);
+        }
+
+        return ResponseEntity.ok(request);
     }
 
     @GetMapping("/username/{username}")

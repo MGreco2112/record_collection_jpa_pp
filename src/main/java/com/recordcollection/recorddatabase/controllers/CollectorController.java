@@ -97,6 +97,24 @@ public class CollectorController {
             request.getRecords().add(record.getName());
         }
 
+        //todo get working
+
+//        try {
+//            Connection conn = DriverManager.getConnection(myUrl, username, password);
+//            Class.forName(myDriver);
+//            String query = "SELECT name FROM record WHERE id IN (SELECT record_id FROM collector_record WHERE collector_id = (?))";
+//            PreparedStatement statement = conn.prepareStatement(query);
+//
+//            statement.setString(1, Long.toString(currentCollector.getId()));
+//
+//            statement.executeUpdate();
+//
+//        } catch (Exception e) {
+//            Logger logger = LoggerFactory.getLogger(CollectorController.class);
+//            System.out.println(e.getMessage());
+//
+//        }
+
         for (Comment comment : currentCollector.getComments()) {
             request.getComments().add(comment);
         }

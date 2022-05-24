@@ -17,7 +17,6 @@ public class Artist {
     private String[] members;
 
     @OneToMany
-    @JoinColumn(name = "record_id", referencedColumnName = "id")
     @JsonIgnoreProperties({"artist", "comments"})
     private Set<Record> records;
 

@@ -255,6 +255,13 @@ public class RecordController {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
 
+        for (Record record : selArtist.get().getRecords()) {
+            record.setArtist(null);
+            repository.save(record);
+        }
+
+        artistRepository.save(selArtist.get());
+
         artistRepository.delete(selArtist.get());
 
         return new ResponseEntity<>("Artist Deleted", HttpStatus.OK);

@@ -203,15 +203,19 @@ public class RecordController {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
 
-        Optional<Artist> selArtist = artistRepository.findById(selRecord.get().getArtist().getId());
+        if (selRecord.get().getArtist() != null) {
 
-        if (selArtist.isEmpty()) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            Optional<Artist> selArtist = artistRepository.findById(selRecord.get().getArtist().getId());
+
+            if (selArtist.isEmpty()) {
+                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            }
+
+            selArtist.get().getRecords().remove(selRecord.get());
+
+            selRecord.get().setArtist(null);
         }
 
-        selArtist.get().getRecords().remove(selRecord.get());
-
-        selRecord.get().setArtist(null);
 
         selRecord.get().getCollectors().clear();
 

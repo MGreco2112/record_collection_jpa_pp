@@ -9,11 +9,11 @@ public class UpdateCollectorRequest {
     private Long id;
     private String name;
     private Set<String> records;
-    private Set<Comment> comments;
+    private Set<String> comments;
     private Set<Offer> sentOffers;
     private Set<Offer> receivedOffers;
 
-    public UpdateCollectorRequest(Long id, String name, Set<String> records, Set<Comment> comments, Set<Offer> sentOffers, Set<Offer> receivedOffers) {
+    public UpdateCollectorRequest(Long id, String name, Set<String> records, Set<String> comments, Set<Offer> sentOffers, Set<Offer> receivedOffers) {
         this.id = id;
         this.name = name;
         this.records = records;
@@ -49,11 +49,11 @@ public class UpdateCollectorRequest {
         this.records = records;
     }
 
-    public Set<Comment> getComments() {
+    public Set<String> getComments() {
         return comments;
     }
 
-    public void setComments(Set<Comment> comments) {
+    public void setComments(Set<String> comments) {
         this.comments = comments;
     }
 

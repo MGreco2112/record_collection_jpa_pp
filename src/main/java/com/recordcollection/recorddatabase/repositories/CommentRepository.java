@@ -14,4 +14,7 @@ import java.util.Optional;
 public interface CommentRepository extends JpaRepository<Comment, Long> {
     @Query(value = "SELECT * FROM comment WHERE collector_id = :cId && record_id = :rId", nativeQuery = true)
     Optional<Comment> getCommentByCollectorAndRecordIds(@Param("cId") Long cId, @Param("rId") Long rId);
+
+    @Query(value = "SELECT * FROM comment WHERE user_comment = :comment", nativeQuery = true)
+    Optional<Comment> getCommentByUserComment(@Param("comment") String comment);
 }

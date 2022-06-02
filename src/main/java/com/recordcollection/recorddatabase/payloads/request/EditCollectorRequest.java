@@ -8,7 +8,7 @@ import java.util.Set;
 public class EditCollectorRequest {
     private String name;
     private Set<String> records = new HashSet<>();
-    private Set<Comment> comments = new HashSet<>();
+    private Set<String> comments = new HashSet<>();
 
     public EditCollectorRequest(String name) {
         this.name = name;
@@ -30,11 +30,11 @@ public class EditCollectorRequest {
         this.records = records;
     }
 
-    public Set<Comment> getComments() {
+    public Set<String> getComments() {
         return comments;
     }
 
-    public void setComments(Set<Comment> comments) {
+    public void setComments(Set<String> comments) {
         this.comments = comments;
     }
 }

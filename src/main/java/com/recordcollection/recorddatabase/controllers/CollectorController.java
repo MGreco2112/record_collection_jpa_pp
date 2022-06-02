@@ -97,10 +97,8 @@ public class CollectorController {
             request.getRecords().add(record.getName());
         }
 
-        //todo get working
-
         for (Comment comment : currentCollector.getComments()) {
-            request.getComments().add(comment);
+            request.getComments().add(comment.getUserComment());
         }
 
         return ResponseEntity.ok(request);
@@ -309,7 +307,26 @@ public class CollectorController {
             currentCollector.get().setRecords(newRecords);
         }
         if (update.getComments() != null) {
-            currentCollector.get().setComments(update.getComments());
+
+            Set<Comment> comments = new HashSet<>();
+
+            if (update.getComments().size() == 0) {
+                currentCollector.get().getComments().clear();
+            } else {
+
+                for (String comment : update.getComments()) {
+                    Optional<Comment> selComment = commentRepository.getCommentByUserComment(comment);
+
+                    if (selComment.isEmpty()) {
+                        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+                    }
+
+                    comments.add(selComment.get());
+                }
+
+                currentCollector.get().setComments(comments);
+            }
+
         }
         if (update.getSentOffers() != null) {
             currentCollector.get().setSentOffers(update.getSentOffers());

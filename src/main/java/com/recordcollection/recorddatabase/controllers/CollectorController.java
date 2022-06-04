@@ -311,7 +311,11 @@ public class CollectorController {
             Set<Comment> comments = new HashSet<>();
 
             if (update.getComments().size() == 0) {
-                currentCollector.get().getComments().clear();
+                for (Comment comment : currentCollector.get().getComments()) {
+                    commentRepository.delete(comment);
+                }
+
+                currentCollector.get().setComments(comments);
             } else {
 
                 for (String comment : update.getComments()) {

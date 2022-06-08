@@ -358,6 +358,14 @@ public class CollectorController {
             selUser.setPassword(encoder.encode(updates.getPassword()));
         }
 
+        if (updates.getDiscogsToken() != null) {
+            selUser.setDiscogsToken(updates.getDiscogsToken());
+        }
+
+        if (updates.getDiscogsSecret() != null) {
+            selUser.setDiscogsSecret(updates.getDiscogsSecret());
+        }
+
         if (updates.getRoles() != null) {
             Set<Role> roles = new HashSet<>();
 

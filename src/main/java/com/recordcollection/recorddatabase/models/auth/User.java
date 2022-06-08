@@ -25,6 +25,10 @@ public class User {
 //    @Size(min = 5, max = 20)
     private String password;
 
+    private String discogsToken;
+
+    private String discogsSecret;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",
@@ -73,5 +77,21 @@ public class User {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    public String getDiscogsToken() {
+        return discogsToken;
+    }
+
+    public void setDiscogsToken(String discogsToken) {
+        this.discogsToken = discogsToken;
+    }
+
+    public String getDiscogsSecret() {
+        return discogsSecret;
+    }
+
+    public void setDiscogsSecret(String discogsSecret) {
+        this.discogsSecret = discogsSecret;
     }
 }

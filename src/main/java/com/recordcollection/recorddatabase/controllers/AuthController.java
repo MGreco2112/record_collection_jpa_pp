@@ -3,6 +3,7 @@ package com.recordcollection.recorddatabase.controllers;
 import com.recordcollection.recorddatabase.models.auth.ERole;
 import com.recordcollection.recorddatabase.models.auth.Role;
 import com.recordcollection.recorddatabase.models.auth.User;
+import com.recordcollection.recorddatabase.payloads.api.response.OauthRequestResponse;
 import com.recordcollection.recorddatabase.payloads.request.LoginRequest;
 import com.recordcollection.recorddatabase.payloads.request.SignupRequest;
 import com.recordcollection.recorddatabase.payloads.response.JwtResponse;
@@ -12,6 +13,7 @@ import com.recordcollection.recorddatabase.repositories.UserRepository;
 import com.recordcollection.recorddatabase.security.JwtUtils;
 import com.recordcollection.recorddatabase.security.services.UserDetailsImpl;
 
+import kong.unirest.Unirest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -63,6 +66,18 @@ public class AuthController {
 
     @Value("${Spring.datasource.password}")
     private String password;
+
+    @Value("${recorddatabase.app.consumerKey}")
+    private String consumerKey;
+
+    @Value("${recorddatabase.app.consumerSecret}")
+    private String consumerSecret;
+
+    @Value("${recorddatabase.app.requestTokenURL}")
+    private String requestTokenURL;
+
+    @Value("${recorddatabase.app.callbackURL}")
+    private String callbackURL;
 
     @PostMapping("/signin")
     public ResponseEntity<JwtResponse> authenticateUser(@RequestBody LoginRequest loginRequest) {
@@ -161,6 +176,26 @@ public class AuthController {
         repository.save(user);
 
         return new ResponseEntity(new MessageResponse("User Registered Successfully"), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/discogsTokenRequest")
+    public ResponseEntity<OauthRequestResponse> getDiscogsOauthToken() {
+        Date date = new Date();
+
+        long timestamp = date.getTime();
+
+        String response = Unirest.get(requestTokenURL)
+                .header("Authorization", "OAuth oauth_consumer_key=" + consumerKey + ", oauth_nonce=" + timestamp +
+                        ", oauth_signature=" + consumerSecret + "&, oauth_signature_method=\"PLAINTEXT\", oauth_timestamp=" + timestamp +
+                        ", oauth_callback=" + callbackURL)
+                .asString()
+                .getBody();
+
+        if (response.length() == 0) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        return ResponseEntity.ok(new OauthRequestResponse(response));
     }
 
 }

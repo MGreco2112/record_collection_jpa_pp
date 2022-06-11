@@ -56,6 +56,7 @@ public class DiscogsApiController {
 
         DiscogsRecord response = Unirest.get(testURL)
                 .header("Authorization", "Discogs key=" + currentUser.getDiscogsToken() + ", secret=" + currentUser.getDiscogsSecret())
+                .header("User-Agent", "TheVinylHub/v1.0")
                 .asObject(DiscogsRecord.class)
                 .getBody();
 

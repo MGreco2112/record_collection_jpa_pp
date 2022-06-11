@@ -14,13 +14,13 @@ public class DiscogsRecord {
     private Long id;
 
     private String title;
-    private List<DiscogsArtist> artists;
-    private List<Image> images;
-    private List<Track> tracklist;
+    private DiscogsArtist[] artists;
+    private Image[] images;
+    private Track[] tracklist;
     private Long year;
     private String uri;
 
-    public DiscogsRecord(Long id, String title, List<DiscogsArtist> artists, List<Image> images, List<Track> tracklist, Long year, String uri) {
+    public DiscogsRecord(Long id, String title, DiscogsArtist[] artists, Image[] images, Track[] tracklist, Long year, String uri) {
         this.id = id;
         this.title = title;
         this.artists = artists;
@@ -34,15 +34,15 @@ public class DiscogsRecord {
     private class Image {
         private String uri;
 
-        private Image(String uri) {
+        public Image(String uri) {
             this.uri = uri;
         }
 
-        private String getUri() {
+        public String getUri() {
             return uri;
         }
 
-        private void setUri(String uri) {
+        public void setUri(String uri) {
             this.uri = uri;
         }
     }
@@ -51,15 +51,15 @@ public class DiscogsRecord {
     private class Track {
         private String title;
 
-        private Track(String title) {
+        public Track(String title) {
             this.title = title;
         }
 
-        private String getTitle() {
+        public String getTitle() {
             return title;
         }
 
-        private void setTitle(String title) {
+        public void setTitle(String title) {
             this.title = title;
         }
     }
@@ -80,27 +80,27 @@ public class DiscogsRecord {
         this.title = title;
     }
 
-    public List<DiscogsArtist> getArtists() {
+    public DiscogsArtist[] getArtists() {
         return artists;
     }
 
-    public void setArtists(List<DiscogsArtist> artists) {
+    public void setArtists(DiscogsArtist[] artists) {
         this.artists = artists;
     }
 
-    public List<Image> getImages() {
+    public Image[] getImages() {
         return images;
     }
 
-    public void setImages(List<Image> images) {
+    public void setImages(Image[] images) {
         this.images = images;
     }
 
-    public List<Track> getTracklist() {
+    public Track[] getTracklist() {
         return tracklist;
     }
 
-    public void setTracklist(List<Track> tracklist) {
+    public void setTracklist(Track[] tracklist) {
         this.tracklist = tracklist;
     }
 

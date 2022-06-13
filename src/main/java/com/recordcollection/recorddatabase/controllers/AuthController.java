@@ -3,6 +3,7 @@ package com.recordcollection.recorddatabase.controllers;
 import com.recordcollection.recorddatabase.models.auth.ERole;
 import com.recordcollection.recorddatabase.models.auth.Role;
 import com.recordcollection.recorddatabase.models.auth.User;
+import com.recordcollection.recorddatabase.payloads.api.request.DiscogsTokenRequest;
 import com.recordcollection.recorddatabase.payloads.api.response.OauthRequestResponse;
 import com.recordcollection.recorddatabase.payloads.request.LoginRequest;
 import com.recordcollection.recorddatabase.payloads.request.SignupRequest;
@@ -78,6 +79,9 @@ public class AuthController {
 
     @Value("${recorddatabase.app.callbackURL}")
     private String callbackURL;
+
+    @Value("${recorddatabase.app.accessTokenURL}")
+    private String accessTokenURL;
 
     @PostMapping("/signin")
     public ResponseEntity<JwtResponse> authenticateUser(@RequestBody LoginRequest loginRequest) {
@@ -188,6 +192,28 @@ public class AuthController {
                 .header("Authorization", "OAuth oauth_consumer_key=" + consumerKey + ", oauth_nonce=" + timestamp +
                         ", oauth_signature=" + consumerSecret + "&, oauth_signature_method=\"PLAINTEXT\", oauth_timestamp=" + timestamp +
                         ", oauth_callback=" + callbackURL)
+                .asString()
+                .getBody();
+
+        if (response.length() == 0) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        return ResponseEntity.ok(new OauthRequestResponse(response));
+    }
+
+    //TODO get functioning to authorize users
+    @PostMapping("/discogsAccessToken")
+    public ResponseEntity<OauthRequestResponse> giveAccess(@RequestBody DiscogsTokenRequest request) {
+        Date date = new Date();
+
+        long timestamp = date.getTime();
+
+        String response = Unirest.post(accessTokenURL)
+                .header("Authorization", "OAuth oauth_consumer_key=" + consumerKey + ", oauth_nonce=" + timestamp +
+                        ", oauth_token=" + request.getToken() + ", oauth_signature=" + consumerSecret +
+                        "&, oauth_signature_method=\"PLAINTEXT\", oauth_timestamp=" + timestamp +
+                        "oauth_verifier=" + request.getSecret())
                 .asString()
                 .getBody();
 

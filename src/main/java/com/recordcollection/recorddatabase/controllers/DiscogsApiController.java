@@ -55,7 +55,7 @@ public class DiscogsApiController {
         long timestamp = date.getTime();
 
         DiscogsRecord response = Unirest.get(testURL)
-                .header("Authorization", "Discogs key=" + currentUser.getDiscogsToken() + ", secret=" + currentUser.getDiscogsSecret())
+                .header("Authorization", "OAuth oauth_access_token=" + currentUser.getDiscogsToken() + ", oauth_access_token_secret=" + currentUser.getDiscogsSecret())
                 .header("User-Agent", "TheVinylHub/v1.0")
                 .asObject(DiscogsRecord.class)
                 .getBody();
@@ -64,6 +64,27 @@ public class DiscogsApiController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/authorize")
+    public ResponseEntity<String> authorizeUser() {
+        User currentUser = userService.getCurrentUser();
+
+        if (currentUser == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        Date date = new Date();
+
+        long timestamp = date.getTime();
+
+        String response = Unirest.get("https://api.discogs.com/oauth/identity")
+                .header("Authorization", "OAuth oauth_access_token=" + currentUser.getDiscogsToken() + ", oauth_access_token_secret=" + currentUser.getDiscogsSecret())
+                .header("User-Agent", "TheVinylHub/v1.0")
+                .asString()
+                .getBody();
 
         return ResponseEntity.ok(response);
     }

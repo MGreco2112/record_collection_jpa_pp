@@ -211,14 +211,14 @@ public class AuthController {
 
         String response = Unirest.post(accessTokenURL)
                 .header("Authorization", "OAuth oauth_consumer_key=" + consumerKey + ", oauth_nonce=" + timestamp +
-                        ", oauth_token=" + request.getToken() + ", oauth_signature=" + consumerSecret + "%26" + request.getSecret() /* another string of unknown origin */ +
+                        ", oauth_token=" + request.getToken() + ", oauth_signature=" + consumerSecret + "&" + request.getSecret() /* another string of unknown origin */ +
                         ", oauth_signature_method=\"PLAINTEXT\", oauth_timestamp=" + timestamp +
-                        "oauth_verifier=" + request.getSecret())
+                        ", oauth_verifier=" + request.getSecret())
                 /*
                     Attempted to follow the Discogs forum post about appending a %26 to the consumer secret without success
                     Will attempt to follow up
                 */
-
+//                .header("Content-Type", "application/x-www-form-urlencoded")
                 .asString()
                 .getBody();
 

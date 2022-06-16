@@ -211,11 +211,12 @@ public class AuthController {
 
         String response = Unirest.post(accessTokenURL)
                 .header("Authorization", "OAuth oauth_consumer_key=" + consumerKey + ", oauth_nonce=" + timestamp +
-                        ", oauth_token=" + request.getToken() + ", oauth_signature=" + consumerSecret + "&" /* another string of unknown origin */ +
+                        ", oauth_token=" + request.getToken() + ", oauth_signature=" + consumerSecret + "%26" /* another string of unknown origin */ +
                         ", oauth_signature_method=\"PLAINTEXT\", oauth_timestamp=" + timestamp +
                         "oauth_verifier=" + request.getSecret())
                 /*
-                OAuth oauth_consumer_key=ZRMZAysSqUGldpqndvAV, oauth_nonce=1655244060790, oauth_token=rVYkXuWSAZjKNCNjsBVYFlyTWxqKnjaGOhvyAmdX, oauth_signature=gSXXZPTUKsryCMMeVHSOGXtUkvnZfclP&ArsNynjTVWalpVGIIOESBLRRLcoCWafMSpdxMGVf, oauth_signature_method="PLAINTEXT", oauth_timestamp=1655244060790, oauth_verifier=ZAjrcvqQxB
+                    Attempted to follow the Discogs forum post about appending a %26 to the consumer secret without success
+                    Will attempt to follow up
                 */
 
                 .asString()

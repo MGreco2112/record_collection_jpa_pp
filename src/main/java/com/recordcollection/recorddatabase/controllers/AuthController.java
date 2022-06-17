@@ -192,6 +192,7 @@ public class AuthController {
                 .header("Authorization", "OAuth oauth_consumer_key=" + consumerKey + ", oauth_nonce=" + timestamp +
                         ", oauth_signature=" + consumerSecret + "&, oauth_signature_method=\"PLAINTEXT\", oauth_timestamp=" + timestamp +
                         ", oauth_callback=" + callbackURL)
+                .header("User-Agent", "TheVinylHub/v1.0")
                 .asString()
                 .getBody();
 
@@ -209,16 +210,27 @@ public class AuthController {
 
         long timestamp = date.getTime();
 
-        String response = Unirest.post(accessTokenURL)
+        String signature = Unirest.post(accessTokenURL)
                 .header("Authorization", "OAuth oauth_consumer_key=" + consumerKey + ", oauth_nonce=" + timestamp +
                         ", oauth_token=" + request.getToken() + ", oauth_signature=" + consumerSecret + "&" + request.getSecret() /* another string of unknown origin */ +
                         ", oauth_signature_method=\"PLAINTEXT\", oauth_timestamp=" + timestamp +
                         ", oauth_verifier=" + request.getSecret())
-                /*
-                    Attempted to follow the Discogs forum post about appending a %26 to the consumer secret without success
-                    Will attempt to follow up
-                */
-//                .header("Content-Type", "application/x-www-form-urlencoded")
+                .header("User-Agent", "TheVinylHub/v1.0")
+                .asString()
+                .getBody()
+                .substring(51);
+
+        if (signature.length() == 0) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        System.out.println(signature);
+
+        String response = Unirest.post(accessTokenURL)
+                .header("Authorization", "OAuth oauth_consumer_key=" + consumerKey + ", oauth_nonce=" + timestamp +
+                        ", oauth_token=" + request.getToken() + ", oauth_signature=" + signature +
+                        ", oauth_signature_method=\"PLAINTEXT\", oauth_timestamp=" + timestamp +
+                        ", oauth_verifier=" + request.getSecret())
                 .asString()
                 .getBody();
 

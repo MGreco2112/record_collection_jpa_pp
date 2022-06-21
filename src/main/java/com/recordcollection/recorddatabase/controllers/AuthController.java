@@ -212,7 +212,7 @@ public class AuthController {
 
         String signature = Unirest.post(accessTokenURL)
                 .header("Authorization", "OAuth oauth_consumer_key=" + consumerKey + ", oauth_nonce=" + timestamp +
-                        ", oauth_token=" + request.getToken() + ", oauth_signature=" + consumerSecret + "&" + request.getSecret() /* another string of unknown origin */ +
+                        ", oauth_token=" + request.getToken() + ", oauth_signature=" + "\"" + consumerSecret + "&\""+
                         ", oauth_signature_method=\"PLAINTEXT\", oauth_timestamp=" + timestamp +
                         ", oauth_verifier=" + request.getSecret())
                 .header("User-Agent", "TheVinylHub/v1.0")
@@ -228,7 +228,7 @@ public class AuthController {
 
         String response = Unirest.post(accessTokenURL)
                 .header("Authorization", "OAuth oauth_consumer_key=" + consumerKey + ", oauth_nonce=" + timestamp +
-                        ", oauth_token=" + request.getToken() + ", oauth_signature=" + signature +
+                        ", oauth_token=" + request.getToken() + ", oauth_signature=" + "\"" + signature + "\"" +
                         ", oauth_signature_method=\"PLAINTEXT\", oauth_timestamp=" + timestamp +
                         ", oauth_verifier=" + request.getSecret())
                 .asString()

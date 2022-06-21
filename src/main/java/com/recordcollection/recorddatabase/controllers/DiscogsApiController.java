@@ -26,6 +26,12 @@ public class DiscogsApiController {
     @Value("${recorddatabase.app.testURL}")
     private String testURL;
 
+    @Value("${recorddatabase.app.consumerKey}")
+    private String consumerKey;
+
+    @Value("${recorddatabase.app.consumerSecret}")
+    private String consumerSecret;
+
     /*
     start at a number
     Create List
@@ -55,7 +61,12 @@ public class DiscogsApiController {
         long timestamp = date.getTime();
 
         DiscogsRecord response = Unirest.get(testURL)
-                .header("Authorization", "Discogs key=" + currentUser.getDiscogsToken() + ", secret=" + currentUser.getDiscogsSecret())
+                .header("Authorization", "OAuth oauth_consumer_key=\"" + consumerKey +
+                        "\",oauth_nonce=\"" + timestamp +
+                        "\",oauth_token=\"" + currentUser.getDiscogsToken().substring(11) +
+                        "\",oauth_signature=\"" + consumerSecret + "&" + currentUser.getDiscogsSecret().substring(18) +
+                        "\",oauth_signature_method=\"PLAINTEXT\"" +
+                        ",oauth_timestamp=\"" + timestamp + "\"")
                 .header("User-Agent", "TheVinylHub/v1.0")
                 .asObject(DiscogsRecord.class)
                 .getBody();

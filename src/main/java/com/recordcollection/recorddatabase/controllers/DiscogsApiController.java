@@ -35,7 +35,7 @@ public class DiscogsApiController {
     /*
     start at a number
     Create List
-    Call API for x times, increnting ids starting at chosen number
+    Call API for x times, incrementing ids starting at chosen number
     Save API response as formatted Object
     Save formatted Object into SQL Server
      */
@@ -56,18 +56,10 @@ public class DiscogsApiController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
-        Date date = new Date();
-
-        long timestamp = date.getTime();
-
         DiscogsRecord response = Unirest.get(testURL)
-                .header("Authorization", "OAuth oauth_consumer_key=\"" + consumerKey +
-                        "\",oauth_nonce=\"" + timestamp +
-                        "\",oauth_token=\"" + currentUser.getDiscogsToken().substring(11) +
-                        "\",oauth_signature=\"" + consumerSecret + "&" + currentUser.getDiscogsSecret().substring(18) +
-                        "\",oauth_signature_method=\"PLAINTEXT\"" +
-                        ",oauth_timestamp=\"" + timestamp + "\"")
+                .header("Authorization", "Discogs key=\"" + consumerKey + "\", secret=\"" + consumerSecret + "\"")
                 .header("User-Agent", "TheVinylHub/v1.0")
+                .header("Accept", "application/vnd.discogs.v2.discogs+json")
                 .asObject(DiscogsRecord.class)
                 .getBody();
 

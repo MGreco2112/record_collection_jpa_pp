@@ -3,6 +3,7 @@ package com.recordcollection.recorddatabase.controllers;
 import com.recordcollection.recorddatabase.models.auth.User;
 import com.recordcollection.recorddatabase.models.discogs.DiscogsRecord;
 import com.recordcollection.recorddatabase.services.UserService;
+import com.recordcollection.recorddatabase.models.Record;
 import kong.unirest.Unirest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,7 +14,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Date;
+import java.util.ArrayList;
+
 
 @CrossOrigin
 @RestController
@@ -69,5 +71,35 @@ public class DiscogsApiController {
 
 
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/frontendTest")
+    public ResponseEntity<Record> testRecordCasting() {
+        DiscogsRecord testRecord = testDiscogsAPI().getBody();
+
+        if (testRecord == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        int tracklistCount = 0;
+
+        ArrayList<String> tracklist = new ArrayList<>();
+
+        for (DiscogsRecord.Track track : testRecord.getTracklist()) {
+            tracklist.add(track.getTitle());
+
+            tracklistCount++;
+        }
+
+        Record formattedRecord = new Record(
+                testRecord.getTitle(),
+                testRecord.getTitle().replace(" ", "_"),
+                testRecord.getYear().toString(),
+                Integer.toString(tracklistCount),
+                tracklist,
+                testRecord.getImages()[0].getUri()
+                );
+
+        return ResponseEntity.ok(formattedRecord);
     }
 }

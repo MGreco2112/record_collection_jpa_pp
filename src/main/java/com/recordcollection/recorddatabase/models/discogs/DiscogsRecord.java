@@ -31,7 +31,7 @@ public class DiscogsRecord {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    private class Image {
+    public class Image {
         private String uri;
 
         public Image(String uri) {
@@ -48,7 +48,7 @@ public class DiscogsRecord {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    private class Track {
+    public class Track {
         private String title;
 
         public Track(String title) {

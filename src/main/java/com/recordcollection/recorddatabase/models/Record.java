@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -53,6 +54,29 @@ public class Record {
         this.numberOfTracks = numberOfTracks;
         this.tracks = tracks;
         this.imageLink = imageLink;
+    }
+
+    public Record(String name, String nameFormatted, String releaseYear, String numberOfTracks, List<String> tracks, String imageLink) {
+        this.name = name;
+        this.nameFormatted = nameFormatted;
+        this.releaseYear = releaseYear;
+        this.numberOfTracks = numberOfTracks;
+        this.tracks = formatTracks(tracks);
+        this.imageLink = imageLink;
+    }
+
+    private String[] formatTracks(List<String> tracks) {
+        String[] tracksArr = new String[tracks.size()];
+
+        int index = 0;
+
+        for (String track : tracks) {
+            tracksArr[index] = track;
+
+            index++;
+        }
+
+        return tracksArr;
     }
 
     public Long getId() {

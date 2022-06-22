@@ -30,6 +30,26 @@ public class Artist {
         this.members = members;
     }
 
+    public Artist(String artistName, String artistNameFormatted, List<String> members) {
+        this.artistName = artistName;
+        this.artistNameFormatted = artistNameFormatted;
+        this.members = formatMembers(members);
+    }
+
+    private String[] formatMembers(List<String> members) {
+        String[] formattedMembers = new String[members.size()];
+
+        int index = 0;
+
+        for (String member : members) {
+            formattedMembers[index] = member;
+
+            index++;
+        }
+
+        return formattedMembers;
+    }
+
     public Long getId() {
         return id;
     }

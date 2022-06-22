@@ -1,6 +1,8 @@
 package com.recordcollection.recorddatabase.controllers;
 
+import com.recordcollection.recorddatabase.models.Artist;
 import com.recordcollection.recorddatabase.models.auth.User;
+import com.recordcollection.recorddatabase.models.discogs.DiscogsArtist;
 import com.recordcollection.recorddatabase.models.discogs.DiscogsRecord;
 import com.recordcollection.recorddatabase.services.UserService;
 import com.recordcollection.recorddatabase.models.Record;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 @CrossOrigin
@@ -83,7 +86,7 @@ public class DiscogsApiController {
 
         int tracklistCount = 0;
 
-        ArrayList<String> tracklist = new ArrayList<>();
+        List<String> tracklist = new ArrayList<>();
 
         for (DiscogsRecord.Track track : testRecord.getTracklist()) {
             tracklist.add(track.getTitle());
@@ -99,6 +102,19 @@ public class DiscogsApiController {
                 tracklist,
                 testRecord.getImages()[0].getUri()
                 );
+
+        List<String> members = new ArrayList<>();
+
+        for (DiscogsArtist artist : testRecord.getArtists()) {
+            members.add(artist.getName());
+        }
+
+        Artist artist = new Artist(
+                testRecord.getArtists()[0].getName(),
+                testRecord.getArtists()[0].getName().replace(" ", "_"),
+                members);
+
+        formattedRecord.setArtist(artist);
 
         return ResponseEntity.ok(formattedRecord);
     }

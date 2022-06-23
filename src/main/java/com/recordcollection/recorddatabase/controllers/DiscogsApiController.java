@@ -4,6 +4,9 @@ import com.recordcollection.recorddatabase.models.Artist;
 import com.recordcollection.recorddatabase.models.auth.User;
 import com.recordcollection.recorddatabase.models.discogs.DiscogsArtist;
 import com.recordcollection.recorddatabase.models.discogs.DiscogsRecord;
+import com.recordcollection.recorddatabase.repositories.ArtistRepository;
+import com.recordcollection.recorddatabase.repositories.CollectorRepository;
+import com.recordcollection.recorddatabase.repositories.RecordRepository;
 import com.recordcollection.recorddatabase.services.UserService;
 import com.recordcollection.recorddatabase.models.Record;
 import kong.unirest.Unirest;
@@ -11,13 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 
 @CrossOrigin
@@ -27,6 +29,12 @@ public class DiscogsApiController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private RecordRepository recordRepository;
+    @Autowired
+    private ArtistRepository artistRepository;
+    @Autowired
+    private CollectorRepository collectorRepository;
 
     @Value("${recorddatabase.app.testURL}")
     private String testURL;
@@ -116,6 +124,23 @@ public class DiscogsApiController {
 
         formattedRecord.setArtist(artist);
 
+        artist.setRecords(new HashSet<>());
+
+        artist.getRecords().add(formattedRecord);
+
         return ResponseEntity.ok(formattedRecord);
+    }
+
+    @PostMapping("/saveDiscogsRecord")
+    public ResponseEntity<Record> saveDiscogsRecord(@RequestBody Record discogsRecord) {
+        Record checkRepository = recordRepository.getRecordByName(discogsRecord.getName());
+
+        if (checkRepository != null) {
+            return new ResponseEntity<>(checkRepository, HttpStatus.OK);
+        }
+        artistRepository.save(discogsRecord.getArtist());
+
+
+        return new ResponseEntity<>(recordRepository.save(discogsRecord), HttpStatus.CREATED);
     }
 }

@@ -42,6 +42,7 @@ public class DiscogsApiController {
     @Value("${recorddatabase.app.consumerSecret}")
     private String consumerSecret;
 
+    //Database Pull from Discogs
     /*
     start at a number
     Create List
@@ -49,6 +50,15 @@ public class DiscogsApiController {
     Save API response as formatted Object
     Save formatted Object into SQL Server
      */
+
+    //Search flow
+    /*
+    Take query param from frontend
+    Call API with param, using filters for Release Name or Artist
+        Release Name format incoming list of Releases as Vinyl Hub Records and sent to Frontend
+        Artist will format incoming list of Artists as Vinyl Hub Artists and sent to Frontend
+    Return Lists as Response Entities
+    */
 
     @PostMapping("/saveDiscogsRecord")
     public ResponseEntity<Record> saveDiscogsRecord(@RequestBody Record discogsRecord) {

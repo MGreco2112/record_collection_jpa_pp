@@ -16,10 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 @CrossOrigin
@@ -53,16 +50,70 @@ public class DiscogsApiController {
     Save formatted Object into SQL Server
      */
 
-    @GetMapping("/callNewRecords")
-    public ResponseEntity<String> getNewDiscogsListings() {
+    @PostMapping("/saveDiscogsRecord")
+    public ResponseEntity<Record> saveDiscogsRecord(@RequestBody Record discogsRecord) {
+        Record checkRepository = recordRepository.getRecordByName(discogsRecord.getName());
+
+        if (checkRepository != null) {
+            return new ResponseEntity<>(checkRepository, HttpStatus.OK);
+        }
+        artistRepository.save(discogsRecord.getArtist());
 
 
-
-        return ResponseEntity.ok("");
+        return new ResponseEntity<>(recordRepository.save(discogsRecord), HttpStatus.CREATED);
     }
 
+
+    //format record method
+    private Record discogsToRecordConversion(DiscogsRecord discogsRecord) {
+        if (discogsRecord == null) {
+            return null;
+        }
+
+        int tracklistCount = 0;
+
+        List<String> tracklist = new ArrayList<>();
+
+        for (DiscogsRecord.Track track : discogsRecord.getTracklist()) {
+            tracklist.add(track.getTitle());
+
+            tracklistCount++;
+        }
+
+        Record formattedRecord = new Record(
+                discogsRecord.getTitle(),
+                discogsRecord.getTitle().replace(" ", "_"),
+                discogsRecord.getYear().toString(),
+                Integer.toString(tracklistCount),
+                tracklist,
+                discogsRecord.getImages()[0].getUri()
+        );
+
+        List<String> members = new ArrayList<>();
+
+        for (DiscogsArtist artist : discogsRecord.getArtists()) {
+            members.add(artist.getName());
+        }
+
+        Artist artist = new Artist(
+                discogsRecord.getArtists()[0].getName(),
+                discogsRecord.getArtists()[0].getName().replace(" ", "_"),
+                members
+        );
+
+        formattedRecord.setArtist(artist);
+
+        artist.setRecords(new HashSet<>(List.of(formattedRecord)));
+
+        return formattedRecord;
+    }
+
+
+
+    //Test routes
+
     @GetMapping("/test")
-    public ResponseEntity<DiscogsRecord> testDiscogsAPI() {
+    public ResponseEntity<Record> testDiscogsAPI() {
         User currentUser = userService.getCurrentUser();
 
         if (currentUser == null) {
@@ -80,67 +131,11 @@ public class DiscogsApiController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
+        Record formattedRecord = discogsToRecordConversion(response);
 
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/frontendTest")
-    public ResponseEntity<Record> testRecordCasting() {
-        DiscogsRecord testRecord = testDiscogsAPI().getBody();
-
-        if (testRecord == null) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        }
-
-        int tracklistCount = 0;
-
-        List<String> tracklist = new ArrayList<>();
-
-        for (DiscogsRecord.Track track : testRecord.getTracklist()) {
-            tracklist.add(track.getTitle());
-
-            tracklistCount++;
-        }
-
-        Record formattedRecord = new Record(
-                testRecord.getTitle(),
-                testRecord.getTitle().replace(" ", "_"),
-                testRecord.getYear().toString(),
-                Integer.toString(tracklistCount),
-                tracklist,
-                testRecord.getImages()[0].getUri()
-                );
-
-        List<String> members = new ArrayList<>();
-
-        for (DiscogsArtist artist : testRecord.getArtists()) {
-            members.add(artist.getName());
-        }
-
-        Artist artist = new Artist(
-                testRecord.getArtists()[0].getName(),
-                testRecord.getArtists()[0].getName().replace(" ", "_"),
-                members);
-
-        formattedRecord.setArtist(artist);
-
-        artist.setRecords(new HashSet<>());
-
-        artist.getRecords().add(formattedRecord);
 
         return ResponseEntity.ok(formattedRecord);
     }
 
-    @PostMapping("/saveDiscogsRecord")
-    public ResponseEntity<Record> saveDiscogsRecord(@RequestBody Record discogsRecord) {
-        Record checkRepository = recordRepository.getRecordByName(discogsRecord.getName());
 
-        if (checkRepository != null) {
-            return new ResponseEntity<>(checkRepository, HttpStatus.OK);
-        }
-        artistRepository.save(discogsRecord.getArtist());
-
-
-        return new ResponseEntity<>(recordRepository.save(discogsRecord), HttpStatus.CREATED);
-    }
 }

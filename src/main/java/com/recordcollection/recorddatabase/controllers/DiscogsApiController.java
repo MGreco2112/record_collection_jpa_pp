@@ -9,6 +9,7 @@ import com.recordcollection.recorddatabase.repositories.CollectorRepository;
 import com.recordcollection.recorddatabase.repositories.RecordRepository;
 import com.recordcollection.recorddatabase.services.UserService;
 import com.recordcollection.recorddatabase.models.Record;
+import kong.unirest.PagedList;
 import kong.unirest.Unirest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,6 +43,16 @@ public class DiscogsApiController {
     @Value("${recorddatabase.app.consumerSecret}")
     private String consumerSecret;
 
+    @Value("${recorddatabase.app.searchReleaseURL}")
+    private String searchReleaseURL;
+
+    @Value("${recorddatabase.app.searchArtistURL}")
+    private String searchArtistURL;
+
+    private String recordSearchParams = "&type=master&per_page=5";
+
+    private String artistSearchParams = "&type=artist&per_page=5";
+
     //Database Pull from Discogs
     /*
     start at a number
@@ -59,6 +70,22 @@ public class DiscogsApiController {
         Artist will format incoming list of Artists as Vinyl Hub Artists and sent to Frontend
     Return Lists as Response Entities
     */
+
+    @GetMapping("/searchRecords/{recordName}")
+    private ResponseEntity<List<Record>> callDiscogsRecordsByQuery(@PathVariable String recordName) {
+//        PagedList<DiscogsRecord> discogsRecords = Unirest.get(searchReleaseURL + recordName + recordSearchParams)
+//                .header("Authorization", "Discogs key=\"" + consumerKey + "\", secret=\"" + consumerSecret + "\"")
+//                .header("User-Agent", "TheVinylHub/v1.0")
+//                .header("Accept", "application/vnd.discogs.v2.discogs+json")
+//                .asPaged(
+//                        r -> r.asObject(DiscogsRecord.class),
+//                        r -> r.getHeaders().getFirst("page=1")
+//                )
+//                .getBodies();
+
+        //create Object to format the incoming search
+        return null;
+    }
 
     @PostMapping("/saveDiscogsRecord")
     public ResponseEntity<Record> saveDiscogsRecord(@RequestBody Record discogsRecord) {

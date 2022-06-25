@@ -77,11 +77,8 @@ public class DiscogsApiController {
 //                .header("Authorization", "Discogs key=\"" + consumerKey + "\", secret=\"" + consumerSecret + "\"")
 //                .header("User-Agent", "TheVinylHub/v1.0")
 //                .header("Accept", "application/vnd.discogs.v2.discogs+json")
-//                .asPaged(
-//                        r -> r.asObject(DiscogsRecord.class),
-//                        r -> r.getHeaders().getFirst("page=1")
-//                )
-//                .getBodies();
+//                .asObject()
+//                .getBody();
 
         //create Object to format the incoming search
         return null;

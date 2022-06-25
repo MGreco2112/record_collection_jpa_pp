@@ -90,7 +90,49 @@ public class DiscogsSearchResults {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public class Result {
+        private String title;
+        private String year;
+        private String resource_url;
+        private Long id;
 
+        public Result(String title, String year, String resource_url, Long id) {
+            this.title = title;
+            this.year = year;
+            this.resource_url = resource_url;
+            this.id = id;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+        public String getYear() {
+            return year;
+        }
+
+        public void setYear(String year) {
+            this.year = year;
+        }
+
+        public String getResource_url() {
+            return resource_url;
+        }
+
+        public void setResource_url(String resource_url) {
+            this.resource_url = resource_url;
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)

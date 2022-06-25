@@ -4,6 +4,7 @@ import com.recordcollection.recorddatabase.models.Artist;
 import com.recordcollection.recorddatabase.models.auth.User;
 import com.recordcollection.recorddatabase.models.discogs.DiscogsArtist;
 import com.recordcollection.recorddatabase.models.discogs.DiscogsRecord;
+import com.recordcollection.recorddatabase.models.discogs.DiscogsSearchResults;
 import com.recordcollection.recorddatabase.repositories.ArtistRepository;
 import com.recordcollection.recorddatabase.repositories.CollectorRepository;
 import com.recordcollection.recorddatabase.repositories.RecordRepository;
@@ -73,14 +74,17 @@ public class DiscogsApiController {
 
     @GetMapping("/searchRecords/{recordName}")
     private ResponseEntity<List<Record>> callDiscogsRecordsByQuery(@PathVariable String recordName) {
-//        PagedList<DiscogsRecord> discogsRecords = Unirest.get(searchReleaseURL + recordName + recordSearchParams)
-//                .header("Authorization", "Discogs key=\"" + consumerKey + "\", secret=\"" + consumerSecret + "\"")
-//                .header("User-Agent", "TheVinylHub/v1.0")
-//                .header("Accept", "application/vnd.discogs.v2.discogs+json")
-//                .asObject()
-//                .getBody();
+        List<Record> records = new ArrayList<>();
 
-        //create Object to format the incoming search
+
+        DiscogsSearchResults discogsResults = Unirest.get(searchReleaseURL + recordName + recordSearchParams)
+                .header("Authorization", "Discogs key=\"" + consumerKey + "\", secret=\"" + consumerSecret + "\"")
+                .header("User-Agent", "TheVinylHub/v1.0")
+                .header("Accept", "application/vnd.discogs.v2.discogs+json")
+                .asObject(DiscogsSearchResults.class)
+                .getBody();
+
+        //use discogsResults.results to get resource_urls of each result. Dump their endpoints into Record objects
         return null;
     }
 

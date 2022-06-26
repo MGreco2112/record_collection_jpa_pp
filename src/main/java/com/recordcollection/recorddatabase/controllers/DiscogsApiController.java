@@ -5,6 +5,7 @@ import com.recordcollection.recorddatabase.models.auth.User;
 import com.recordcollection.recorddatabase.models.discogs.DiscogsArtist;
 import com.recordcollection.recorddatabase.models.discogs.DiscogsRecord;
 import com.recordcollection.recorddatabase.models.discogs.DiscogsSearchResults;
+import com.recordcollection.recorddatabase.payloads.api.response.DiscogsRecordSearchResponse;
 import com.recordcollection.recorddatabase.repositories.ArtistRepository;
 import com.recordcollection.recorddatabase.repositories.CollectorRepository;
 import com.recordcollection.recorddatabase.repositories.RecordRepository;
@@ -73,8 +74,8 @@ public class DiscogsApiController {
     */
 
     @GetMapping("/searchRecords/{recordName}")
-    private ResponseEntity<List<Record>> callDiscogsRecordsByQuery(@PathVariable String recordName) {
-        List<Record> records = new ArrayList<>();
+    private ResponseEntity<List<DiscogsRecordSearchResponse>> callDiscogsRecordsByQuery(@PathVariable String recordName) {
+        List<DiscogsRecordSearchResponse> records = new ArrayList<>();
 
 
         DiscogsSearchResults discogsResults = Unirest.get(searchReleaseURL + recordName + recordSearchParams)
@@ -84,8 +85,17 @@ public class DiscogsApiController {
                 .asObject(DiscogsSearchResults.class)
                 .getBody();
 
-        //use discogsResults.results to get resource_urls of each result. Dump their endpoints into Record objects
-        return null;
+        for (DiscogsSearchResults.Result record : discogsResults.getResults()) {
+            DiscogsRecordSearchResponse newRecord = new DiscogsRecordSearchResponse(record.getTitle(), record.getResource_url());
+
+            records.add(newRecord);
+        }
+
+        if (records.size() == 0) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        return ResponseEntity.ok(records);
     }
 
     @PostMapping("/saveDiscogsRecord")

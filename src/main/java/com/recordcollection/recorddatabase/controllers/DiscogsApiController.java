@@ -5,6 +5,7 @@ import com.recordcollection.recorddatabase.models.auth.User;
 import com.recordcollection.recorddatabase.models.discogs.DiscogsArtist;
 import com.recordcollection.recorddatabase.models.discogs.DiscogsRecord;
 import com.recordcollection.recorddatabase.models.discogs.DiscogsSearchResults;
+import com.recordcollection.recorddatabase.payloads.api.response.DiscogsArtistSearchResponse;
 import com.recordcollection.recorddatabase.payloads.api.response.DiscogsRecordSearchResponse;
 import com.recordcollection.recorddatabase.repositories.ArtistRepository;
 import com.recordcollection.recorddatabase.repositories.CollectorRepository;
@@ -51,9 +52,9 @@ public class DiscogsApiController {
     @Value("${recorddatabase.app.searchArtistURL}")
     private String searchArtistURL;
 
-    private String recordSearchParams = "&type=master&per_page=5";
+    private final String recordSearchParams = "&type=master&per_page=5";
 
-    private String artistSearchParams = "&type=artist&per_page=5";
+    private final String artistSearchParams = "&type=artist&per_page=5";
 
     //Database Pull from Discogs
     /*
@@ -96,6 +97,30 @@ public class DiscogsApiController {
         }
 
         return ResponseEntity.ok(records);
+    }
+
+    @GetMapping("/searchArtists/{artistName}")
+    private ResponseEntity<List<DiscogsArtistSearchResponse>> callDiscogsArtistsByQuery(@PathVariable String artistName) {
+        List<DiscogsArtistSearchResponse> artists = new ArrayList<>();
+
+        DiscogsSearchResults discogsResults = Unirest.get(searchArtistURL + artistName + artistSearchParams)
+                .header("Authorization", "Discogs key=\"" + consumerKey + "\", secret=\"" + consumerSecret + "\"")
+                .header("User-Agent", "TheVinylHub/v1.0")
+                .header("Accept", "application/vnd.discogs.v2.discogs+json")
+                .asObject(DiscogsSearchResults.class)
+                .getBody();
+
+        for (DiscogsSearchResults.Result artist : discogsResults.getResults()) {
+            DiscogsArtistSearchResponse newArtist = new DiscogsArtistSearchResponse(artist.getTitle(), artist.getResource_url(), artist.getCover_image());
+
+            artists.add(newArtist);
+        }
+
+        if (artists.size() == 0) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        return ResponseEntity.ok(artists);
     }
 
     @PostMapping("/saveDiscogsRecord")

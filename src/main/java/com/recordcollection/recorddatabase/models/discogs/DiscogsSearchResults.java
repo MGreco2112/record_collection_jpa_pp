@@ -94,12 +94,20 @@ public class DiscogsSearchResults {
         private String year;
         private String resource_url;
         private Long id;
+        private String cover_image;
 
         public Result(String title, String year, String resource_url, Long id) {
             this.title = title;
             this.year = year;
             this.resource_url = resource_url;
             this.id = id;
+        }
+
+        public Result(String title, String resource_url, Long id, String cover_image) {
+            this.title = title;
+            this.resource_url = resource_url;
+            this.id = id;
+            this.cover_image = cover_image;
         }
 
         public String getTitle() {
@@ -124,6 +132,14 @@ public class DiscogsSearchResults {
 
         public void setResource_url(String resource_url) {
             this.resource_url = resource_url;
+        }
+
+        public String getCover_image() {
+            return cover_image;
+        }
+
+        public void setCover_image(String cover_image) {
+            this.cover_image = cover_image;
         }
 
         public Long getId() {

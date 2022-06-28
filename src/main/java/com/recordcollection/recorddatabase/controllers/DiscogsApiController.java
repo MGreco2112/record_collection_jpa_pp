@@ -136,6 +136,23 @@ public class DiscogsApiController {
         return new ResponseEntity<>(recordRepository.save(discogsRecord), HttpStatus.CREATED);
     }
 
+    @PostMapping("/addBulkRecords")
+    private ResponseEntity<String> saveDiscogsRecords(@RequestBody List<DiscogsRecordSearchResponse> records) {
+
+        for (DiscogsRecordSearchResponse response : records) {
+            DiscogsRecord newRecord = Unirest.get(response.getResource_url())
+                    .header("Authorization", "Discogs key=\"" + consumerKey + "\", secret=\"" + consumerSecret + "\"")
+                    .header("User-Agent", "TheVinylHub/v1.0")
+                    .header("Accept", "application/vnd.discogs.v2.discogs+json")
+                    .asObject(DiscogsRecord.class)
+                    .getBody();
+
+        }
+
+
+        return ResponseEntity.ok("Saved All!");
+    }
+
 
     //format record method
     private Record discogsToRecordConversion(DiscogsRecord discogsRecord) {
@@ -177,6 +194,9 @@ public class DiscogsApiController {
         formattedRecord.setArtist(artist);
 
         artist.setRecords(new HashSet<>(List.of(formattedRecord)));
+
+        recordRepository.save(formattedRecord);
+        artistRepository.save(artist);
 
         return formattedRecord;
     }

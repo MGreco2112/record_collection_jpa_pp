@@ -147,6 +147,7 @@ public class DiscogsApiController {
                     .asObject(DiscogsRecord.class)
                     .getBody();
 
+            discogsToRecordConversion(newRecord);
         }
 
 

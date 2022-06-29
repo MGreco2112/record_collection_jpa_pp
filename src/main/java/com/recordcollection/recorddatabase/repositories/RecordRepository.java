@@ -29,4 +29,7 @@ public interface RecordRepository extends JpaRepository<Record, Long> {
 
     @Query(value = "SELECT * FROM record WHERE name LIKE %:query% ORDER BY name ASC", nativeQuery = true)
     List<Record> getAllRecordsByNameQuery(@Param("query") String query);
+
+    @Query(value = "SELECT EXISTS (SELECT * FROM record WHERE name = :recordName", nativeQuery = true)
+    Boolean recordExistsByName(@Param("recordName") String recordName);
 }

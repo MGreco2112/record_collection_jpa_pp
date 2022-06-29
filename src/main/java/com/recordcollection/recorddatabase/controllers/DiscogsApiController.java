@@ -136,8 +136,10 @@ public class DiscogsApiController {
         return new ResponseEntity<>(recordRepository.save(discogsRecord), HttpStatus.CREATED);
     }
 
-    @PostMapping("/addBulkRecords")
-    private ResponseEntity<String> saveDiscogsRecords(@RequestBody List<DiscogsRecordSearchResponse> records) {
+    @PostMapping("/convertBulkRecords")
+    private ResponseEntity<List<Record>> convertBulkDiscogsRecords(@RequestBody List<DiscogsRecordSearchResponse> records) {
+
+        List<Record> formattedRecords = new ArrayList<>();
 
         for (DiscogsRecordSearchResponse response : records) {
             DiscogsRecord newRecord = Unirest.get(response.getResource_url())
@@ -147,11 +149,11 @@ public class DiscogsApiController {
                     .asObject(DiscogsRecord.class)
                     .getBody();
 
-            discogsToRecordConversion(newRecord);
+            formattedRecords.add(discogsToRecordConversion(newRecord));
         }
 
 
-        return ResponseEntity.ok("Saved All!");
+        return ResponseEntity.ok(formattedRecords);
     }
 
 
@@ -195,9 +197,6 @@ public class DiscogsApiController {
         formattedRecord.setArtist(artist);
 
         artist.setRecords(new HashSet<>(List.of(formattedRecord)));
-
-        recordRepository.save(formattedRecord);
-        artistRepository.save(artist);
 
         return formattedRecord;
     }

@@ -17,10 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @CrossOrigin
 @RestController
@@ -120,6 +117,34 @@ public class RecordController {
     @PostMapping
     public ResponseEntity<Record> addRecord(@RequestBody Record record) {
         return new ResponseEntity<>(repository.save(record), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/bulkAddRecords_Artists")
+    public ResponseEntity<String> addBulkRecords(@RequestBody List<Record> records) {
+        for (Record record : records) {
+            if (!repository.recordExistsByName(record.getName())) {
+                Artist artist = artistRepository.getArtistByName(record.getArtist().getArtistName());
+
+                if (artist == null) {
+                    Artist newArtist = createNewArtist(record.getArtist()).getBody();
+
+                    assert newArtist != null;
+                    newArtist.setRecords(new HashSet<>(List.of(record)));
+                    record.setArtist(newArtist);
+
+                    repository.save(record);
+                    artistRepository.save(newArtist);
+                } else {
+                    artist.getRecords().add(record);
+
+                    repository.save(record);
+                    artistRepository.save(artist);
+                }
+            }
+        }
+
+
+        return ResponseEntity.ok("Saved All");
     }
 
     @PostMapping("/artist")

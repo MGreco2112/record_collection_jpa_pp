@@ -21,4 +21,7 @@ public interface ArtistRepository extends JpaRepository<Artist, Long> {
 
     @Query(value = "SELECT * FROM artist WHERE artist_name = :name", nativeQuery = true)
     List<Artist> checkArtistExists(@Param("name") String name);
+
+    @Query(value = "SELECT * FROM artist WHERE artist_name = :artistName", nativeQuery = true)
+    Artist getArtistByName(@Param("artistName") String artistName);
 }

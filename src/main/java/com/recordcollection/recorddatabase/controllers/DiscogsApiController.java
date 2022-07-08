@@ -5,6 +5,7 @@ import com.recordcollection.recorddatabase.models.auth.User;
 import com.recordcollection.recorddatabase.models.discogs.DiscogsArtist;
 import com.recordcollection.recorddatabase.models.discogs.DiscogsRecord;
 import com.recordcollection.recorddatabase.models.discogs.DiscogsSearchResults;
+import com.recordcollection.recorddatabase.payloads.api.request.DiscogsRecordUrlRequest;
 import com.recordcollection.recorddatabase.payloads.api.response.DiscogsArtistSearchResponse;
 import com.recordcollection.recorddatabase.payloads.api.response.DiscogsRecordSearchResponse;
 import com.recordcollection.recorddatabase.repositories.ArtistRepository;
@@ -73,6 +74,20 @@ public class DiscogsApiController {
         Artist will format incoming list of Artists as Vinyl Hub Artists and sent to Frontend
     Return Lists as Response Entities
     */
+
+    @GetMapping("/convertRecord")
+    private ResponseEntity<Record> conversionRoute(@RequestBody DiscogsRecordUrlRequest request) {
+        DiscogsRecord record = Unirest.get(request.getPath())
+                .header("Authorization", "Discogs key=\"" + consumerKey + "\", secret=\"" + consumerSecret + "\"")
+                .header("User-Agent", "TheVinylHub/v1.0")
+                .header("Accept", "application/vnd.discogs.v2.discogs+json")
+                .asObject(DiscogsRecord.class)
+                .getBody();
+
+        Record formattedRecord = discogsToRecordConversion(record);
+
+        return ResponseEntity.ok(formattedRecord);
+    }
 
     @GetMapping("/searchRecords/{recordName}")
     private ResponseEntity<List<DiscogsRecordSearchResponse>> callDiscogsRecordsByQuery(@PathVariable String recordName) {

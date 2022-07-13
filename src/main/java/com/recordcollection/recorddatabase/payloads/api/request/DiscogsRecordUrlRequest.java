@@ -1,17 +1,21 @@
 package com.recordcollection.recorddatabase.payloads.api.request;
 
 public class DiscogsRecordUrlRequest {
-    private String path;
+    private String discogsPath;
 
-    public DiscogsRecordUrlRequest(String path) {
-        this.path = path;
+    public DiscogsRecordUrlRequest() {
+
     }
 
-    public String getPath() {
-        return path;
+    public DiscogsRecordUrlRequest(String discogsPath) {
+        this.discogsPath = discogsPath;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public String getDiscogsPath() {
+        return discogsPath;
+    }
+
+    public void setDiscogsPath(String discogsPath) {
+        this.discogsPath = discogsPath;
     }
 }

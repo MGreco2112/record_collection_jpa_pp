@@ -75,20 +75,6 @@ public class DiscogsApiController {
     Return Lists as Response Entities
     */
 
-    @GetMapping("/convertRecord")
-    private ResponseEntity<Record> conversionRoute(@RequestBody DiscogsRecordUrlRequest request) {
-        DiscogsRecord record = Unirest.get(request.getPath())
-                .header("Authorization", "Discogs key=\"" + consumerKey + "\", secret=\"" + consumerSecret + "\"")
-                .header("User-Agent", "TheVinylHub/v1.0")
-                .header("Accept", "application/vnd.discogs.v2.discogs+json")
-                .asObject(DiscogsRecord.class)
-                .getBody();
-
-        Record formattedRecord = discogsToRecordConversion(record);
-
-        return ResponseEntity.ok(formattedRecord);
-    }
-
     @GetMapping("/searchRecords/{recordName}")
     private ResponseEntity<List<DiscogsRecordSearchResponse>> callDiscogsRecordsByQuery(@PathVariable String recordName) {
         List<DiscogsRecordSearchResponse> records = new ArrayList<>();
@@ -169,6 +155,27 @@ public class DiscogsApiController {
 
 
         return ResponseEntity.ok(formattedRecords);
+    }
+
+    @PostMapping("/convertRecord")
+    private ResponseEntity<Record> conversionRoute(@RequestBody DiscogsRecordUrlRequest request) {
+        DiscogsRecord record = Unirest.get(request.getDiscogsPath())
+                .header("Authorization", "Discogs key=\"" + consumerKey + "\", secret=\"" + consumerSecret + "\"")
+                .header("User-Agent", "TheVinylHub/v1.0")
+                .header("Accept", "application/vnd.discogs.v2.discogs+json")
+                .asObject(DiscogsRecord.class)
+                .getBody();
+
+        Record formattedRecord = discogsToRecordConversion(record);
+
+        return ResponseEntity.ok(formattedRecord);
+    }
+
+    @PostMapping("/testBody")
+    private ResponseEntity<String> testBody(@RequestBody Object request) {
+        System.out.println(request);
+
+        return ResponseEntity.ok("shit_works_fam");
     }
 
 

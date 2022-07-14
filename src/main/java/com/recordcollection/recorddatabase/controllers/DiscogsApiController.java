@@ -171,14 +171,6 @@ public class DiscogsApiController {
         return ResponseEntity.ok(formattedRecord);
     }
 
-    @PostMapping("/testBody")
-    private ResponseEntity<String> testBody(@RequestBody Object request) {
-        System.out.println(request);
-
-        return ResponseEntity.ok("shit_works_fam");
-    }
-
-
     //format record method
     private Record discogsToRecordConversion(DiscogsRecord discogsRecord) {
         if (discogsRecord == null) {

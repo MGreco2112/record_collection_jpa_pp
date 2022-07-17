@@ -122,7 +122,6 @@ public class RecordController {
     @PostMapping("/bulkAddRecords_Artists")
     public ResponseEntity<String> addBulkRecords(@RequestBody List<Record> records) {
         for (Record record : records) {
-            if (!repository.recordExistsByName(record.getName())) {
                 Artist artist = artistRepository.getArtistByName(record.getArtist().getArtistName());
 
                 if (artist == null) {
@@ -141,8 +140,6 @@ public class RecordController {
                     artistRepository.save(artist);
                 }
             }
-        }
-
 
         return ResponseEntity.ok("Saved All");
     }

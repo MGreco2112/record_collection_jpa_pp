@@ -8,6 +8,9 @@ public class DiscogsRecordSearchResponse {
     private String artist;
     private String resource_url;
 
+    public DiscogsRecordSearchResponse() {
+    }
+
     public DiscogsRecordSearchResponse(String title, String resource_url) {
         String[] formattedTitle = title.split("-");
 

@@ -107,6 +107,13 @@ public class RecordController {
         return artistRepository.getArtistsByNameQuery(query);
     }
 
+    @GetMapping("/recordExists/{name}")
+    public ResponseEntity<List<Record>> recordExistsByName(@PathVariable String name) {
+        List<Record> comparableRecords = repository.checkRecordExists(name);
+
+        return ResponseEntity.ok(comparableRecords);
+    }
+
     @GetMapping("/artistExists/{name}")
     public ResponseEntity<List<Artist>> artistExistsByName(@PathVariable String name) {
         List<Artist> artists = artistRepository.checkArtistExists(name);

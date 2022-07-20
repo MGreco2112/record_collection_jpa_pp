@@ -5,6 +5,7 @@ import com.recordcollection.recorddatabase.models.Collector;
 import com.recordcollection.recorddatabase.models.Comment;
 import com.recordcollection.recorddatabase.models.Record;
 import com.recordcollection.recorddatabase.payloads.request.ArtistAddRequest;
+import com.recordcollection.recorddatabase.payloads.request.RecordExistsRequest;
 import com.recordcollection.recorddatabase.payloads.response.EditArtistResponse;
 import com.recordcollection.recorddatabase.repositories.ArtistRepository;
 import com.recordcollection.recorddatabase.repositories.CollectorRepository;
@@ -107,9 +108,9 @@ public class RecordController {
         return artistRepository.getArtistsByNameQuery(query);
     }
 
-    @GetMapping("/recordExists/{name}")
-    public ResponseEntity<List<Record>> recordExistsByName(@PathVariable String name) {
-        List<Record> comparableRecords = repository.checkRecordExists(name);
+    @PostMapping(path = "/recordExists", consumes = "application/x-www-form-urlencoded")
+    public ResponseEntity<List<Record>> recordExistsByName(@RequestBody RecordExistsRequest request) {
+        List<Record> comparableRecords = repository.checkRecordExists(request.getName());
 
         return ResponseEntity.ok(comparableRecords);
     }

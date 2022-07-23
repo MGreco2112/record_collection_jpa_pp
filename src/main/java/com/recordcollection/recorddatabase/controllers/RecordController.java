@@ -108,6 +108,7 @@ public class RecordController {
         return artistRepository.getArtistsByNameQuery(query);
     }
 
+    //not yet working
     @PostMapping(path = "/recordExists", consumes = "application/x-www-form-urlencoded")
     public ResponseEntity<List<Record>> recordExistsByName(@RequestBody RecordExistsRequest request) {
         List<Record> comparableRecords = repository.checkRecordExists(request.getName());
@@ -124,7 +125,12 @@ public class RecordController {
 
     @PostMapping
     public ResponseEntity<Record> addRecord(@RequestBody Record record) {
-        return new ResponseEntity<>(repository.save(record), HttpStatus.CREATED);
+
+        Record newRecord = repository.save(record);
+
+        newRecord.setNameFormatted(newRecord.getNameFormatted() + "_" + newRecord.getId());
+
+        return new ResponseEntity<>(repository.save(newRecord), HttpStatus.CREATED);
     }
 
     @PostMapping("/bulkAddRecords_Artists")
@@ -154,6 +160,11 @@ public class RecordController {
 
     @PostMapping("/artist")
     public ResponseEntity<Artist> createNewArtist(@RequestBody Artist artist) {
+
+        Artist newArtist = artistRepository.save(artist);
+
+        newArtist.setArtistNameFormatted(newArtist.getArtistName() + "_" + newArtist.getId());
+
         return new ResponseEntity<>(artistRepository.save(artist), HttpStatus.CREATED);
     }
 
@@ -182,9 +193,11 @@ public class RecordController {
 
         if (update.getName() != null) {
             selRecord.setName(update.getName());
+
+            selRecord.setNameFormatted(update.getName() + "_" + update.getId());
         }
         if (update.getNameFormatted() != null) {
-            selRecord.setNameFormatted(update.getNameFormatted());
+            selRecord.setNameFormatted(update.getNameFormatted() + "_" + update.getId());
         }
         if (update.getReleaseYear() != null) {
             selRecord.setReleaseYear(update.getReleaseYear());
@@ -211,9 +224,11 @@ public class RecordController {
 
         if (updates.getArtistName() != null) {
             selArtist.setArtistName(updates.getArtistName());
+
+            selArtist.setArtistNameFormatted(updates.getArtistName() + "_" + updates.getId());
         }
         if (updates.getArtistNameFormatted() != null) {
-            selArtist.setArtistNameFormatted(updates.getArtistNameFormatted());
+            selArtist.setArtistNameFormatted(updates.getArtistNameFormatted() + "_" + updates.getId());
         }
         if (updates.getMembers() != null) {
             selArtist.setMembers(updates.getMembers());

@@ -194,10 +194,10 @@ public class RecordController {
         if (update.getName() != null) {
             selRecord.setName(update.getName());
 
-            selRecord.setNameFormatted(update.getName() + "_" + update.getId());
+            selRecord.setNameFormatted(update.getName() + "_" + selRecord.getId());
         }
         if (update.getNameFormatted() != null) {
-            selRecord.setNameFormatted(update.getNameFormatted() + "_" + update.getId());
+            selRecord.setNameFormatted(update.getNameFormatted() + "_" + selRecord.getId());
         }
         if (update.getReleaseYear() != null) {
             selRecord.setReleaseYear(update.getReleaseYear());
@@ -225,10 +225,10 @@ public class RecordController {
         if (updates.getArtistName() != null) {
             selArtist.setArtistName(updates.getArtistName());
 
-            selArtist.setArtistNameFormatted(updates.getArtistName() + "_" + updates.getId());
+            selArtist.setArtistNameFormatted(updates.getArtistName() + "_" + selArtist.getId());
         }
         if (updates.getArtistNameFormatted() != null) {
-            selArtist.setArtistNameFormatted(updates.getArtistNameFormatted() + "_" + updates.getId());
+            selArtist.setArtistNameFormatted(updates.getArtistNameFormatted() + "_" + selArtist.getId());
         }
         if (updates.getMembers() != null) {
             selArtist.setMembers(updates.getMembers());

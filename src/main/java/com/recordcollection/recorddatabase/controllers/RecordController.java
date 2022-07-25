@@ -145,12 +145,20 @@ public class RecordController {
                     newArtist.setRecords(new HashSet<>(List.of(record)));
                     record.setArtist(newArtist);
 
-                    repository.save(record);
-                    artistRepository.save(newArtist);
+                    Record newRecord = repository.save(record);
+
+                    newRecord.setNameFormatted(newRecord.getName() + newRecord.getId());
+
+                    Artist updateNewArtist = artistRepository.save(newArtist);
+
+                    updateNewArtist.setArtistNameFormatted(updateNewArtist.getArtistName() + updateNewArtist.getId());
                 } else {
                     artist.getRecords().add(record);
 
-                    repository.save(record);
+                    Record newRecord = repository.save(record);
+
+                    newRecord.setNameFormatted(newRecord.getName() + newRecord.getId());
+
                     artistRepository.save(artist);
                 }
             }

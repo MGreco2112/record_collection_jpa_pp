@@ -5,6 +5,7 @@ import com.recordcollection.recorddatabase.models.auth.User;
 import com.recordcollection.recorddatabase.models.discogs.DiscogsArtist;
 import com.recordcollection.recorddatabase.models.discogs.DiscogsRecord;
 import com.recordcollection.recorddatabase.models.discogs.DiscogsSearchResults;
+import com.recordcollection.recorddatabase.models.discogs.FullDiscogsArtist;
 import com.recordcollection.recorddatabase.payloads.api.request.DiscogsRecordUrlRequest;
 import com.recordcollection.recorddatabase.payloads.api.response.DiscogsArtistSearchResponse;
 import com.recordcollection.recorddatabase.payloads.api.response.DiscogsRecordSearchResponse;
@@ -53,9 +54,12 @@ public class DiscogsApiController {
     @Value("${recorddatabase.app.searchArtistURL}")
     private String searchArtistURL;
 
-    private final String recordSearchParams = "&type=master&per_page=5";
+    private final String recordSearchParams = "&type=master&per_page=20";
 
-    private final String artistSearchParams = "&type=artist&per_page=5";
+    private final String artistSearchParams = "&type=artist&per_page=20";
+
+    @Value("${recorddatabase.app.artistInfoPageURL}")
+    private String artistInfoPageURL;
 
     //Database Pull from Discogs
     /*
@@ -122,6 +126,23 @@ public class DiscogsApiController {
         }
 
         return ResponseEntity.ok(artists);
+    }
+
+    @GetMapping("/findArtist/{artistId}")
+    public ResponseEntity<FullDiscogsArtist> locateArtistById(@PathVariable Long artistId) {
+        /*
+        send in artistId
+        Call endpoint for artist page and format into FullDiscogsArtist
+        Return in place of Artist
+         */
+        FullDiscogsArtist artist = Unirest.get(artistInfoPageURL + artistId)
+                .header("Authorization", "Discogs key=\"" + consumerKey + "\", secret=\"" + consumerSecret + "\"")
+                .header("User-Agent", "TheVinylHub/v1.0")
+                .header("Accept", "application/vnd.discogs.v2.discogs+json")
+                .asObject(FullDiscogsArtist.class)
+                .getBody();
+
+        return ResponseEntity.ok(artist);
     }
 
     @PostMapping("/saveDiscogsRecord")
@@ -198,8 +219,18 @@ public class DiscogsApiController {
 
         List<String> members = new ArrayList<>();
 
-        for (DiscogsArtist artist : discogsRecord.getArtists()) {
-            members.add(artist.getName());
+        FullDiscogsArtist discogsArtist = Unirest.get(artistInfoPageURL + discogsRecord.getArtists()[0].getId())
+                .header("Authorization", "Discogs key=\"" + consumerKey + "\", secret=\"" + consumerSecret + "\"")
+                .header("User-Agent", "TheVinylHub/v1.0")
+                .header("Accept", "application/vnd.discogs.v2.discogs+json")
+                .asObject(FullDiscogsArtist.class)
+                .getBody();
+
+
+        if (discogsArtist.getMembers() != null) {
+            for (FullDiscogsArtist.Member member : discogsArtist.getMembers()) {
+            members.add(member.getName());
+            }
         }
 
         Artist artist = new Artist(

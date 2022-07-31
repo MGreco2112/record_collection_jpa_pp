@@ -153,13 +153,15 @@ public class RecordController {
 
                     updateNewArtist.setArtistNameFormatted(updateNewArtist.getArtistName() + updateNewArtist.getId());
                 } else {
-                    artist.getRecords().add(record);
+
+                    Artist newArtist = artistRepository.save(artist);
 
                     Record newRecord = repository.save(record);
 
                     newRecord.setNameFormatted(newRecord.getName() + newRecord.getId());
 
-                    artistRepository.save(artist);
+                    //TODO create method like CollectorController.addRecordToCollectorById to add artist to record
+
                 }
             }
 

@@ -15,7 +15,7 @@ import java.util.Set;
 public interface RecordRepository extends JpaRepository<Record, Long> {
     List<Record> getAllRecordsByNameFormatted(String name, Sort sort);
 
-    @Query(value = "SELECT * FROM record ORDER BY name ASC", nativeQuery = true)
+    @Query(value = "SELECT * FROM record ORDER BY name_formatted ASC", nativeQuery = true)
     List<Record> getAllRecordsSorted();
 
     @Query(value = "SELECT * FROM record WHERE name_formatted = :name", nativeQuery = true)

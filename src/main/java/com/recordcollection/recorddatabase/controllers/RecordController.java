@@ -151,7 +151,7 @@ public class RecordController {
 
         newRecord.setNameFormatted(newRecord.getNameFormatted() + "_" + newRecord.getId());
 
-        Set<Track> trackList = new HashSet<>();
+        Set<Track> trackList = new LinkedHashSet<>();
 
         for (String track : record.getTracks()) {
             Track newTrack = new Track(track, newRecord);
@@ -324,6 +324,8 @@ public class RecordController {
         }
 
         repository.save(selRecord.get());
+
+        trackRepository.deleteAll(selRecord.get().getTracks());
 
         repository.delete(selRecord.get());
 

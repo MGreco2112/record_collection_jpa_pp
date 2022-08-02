@@ -22,6 +22,7 @@ public class Record {
 
     @OneToMany(mappedBy = "record", fetch = FetchType.LAZY)
     @JsonIgnoreProperties("record")
+    @OrderBy("id ASC")
     private Set<Track> tracks;
 
     @ManyToOne

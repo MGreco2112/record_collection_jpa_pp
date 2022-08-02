@@ -18,7 +18,6 @@ public class Record {
     private String nameFormatted;
     private String releaseYear;
     private String numberOfTracks;
-//    private String[] tracks; //refactor to Entity OneToMany with new Track Entity
     private String imageLink;
 
     @OneToMany(mappedBy = "record", fetch = FetchType.LAZY)

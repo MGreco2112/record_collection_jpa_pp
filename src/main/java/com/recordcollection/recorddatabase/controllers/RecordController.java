@@ -1,17 +1,13 @@
 package com.recordcollection.recorddatabase.controllers;
 
 
-import com.recordcollection.recorddatabase.models.Artist;
-import com.recordcollection.recorddatabase.models.Collector;
-import com.recordcollection.recorddatabase.models.Comment;
+import com.recordcollection.recorddatabase.models.*;
 import com.recordcollection.recorddatabase.models.Record;
 import com.recordcollection.recorddatabase.payloads.request.ArtistAddRequest;
+import com.recordcollection.recorddatabase.payloads.request.NewRecordRequest;
 import com.recordcollection.recorddatabase.payloads.request.RecordExistsRequest;
 import com.recordcollection.recorddatabase.payloads.response.EditArtistResponse;
-import com.recordcollection.recorddatabase.repositories.ArtistRepository;
-import com.recordcollection.recorddatabase.repositories.CollectorRepository;
-import com.recordcollection.recorddatabase.repositories.CommentRepository;
-import com.recordcollection.recorddatabase.repositories.RecordRepository;
+import com.recordcollection.recorddatabase.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -30,6 +26,8 @@ import java.util.*;
 public class RecordController {
     @Autowired
     private RecordRepository repository;
+    @Autowired
+    private TrackRepository trackRepository;
     @Autowired
     private ArtistRepository artistRepository;
     @Autowired
@@ -141,11 +139,29 @@ public class RecordController {
     }
 
     @PostMapping
-    public ResponseEntity<Record> addRecord(@RequestBody Record record) {
+    public ResponseEntity<Record> addRecord(@RequestBody NewRecordRequest record) {
 
-        Record newRecord = repository.save(record);
+        Record newRecord = repository.save(new Record(
+                record.getName(),
+                "",
+                record.getReleaseUear(),
+                record.getNumberOfTracks(),
+                null,
+                record.getImageLink()));
 
         newRecord.setNameFormatted(newRecord.getNameFormatted() + "_" + newRecord.getId());
+
+        Set<Track> trackList = new HashSet<>();
+
+        for (String track : record.getTracks()) {
+            Track newTrack = new Track(track, newRecord);
+
+            trackList.add(newTrack);
+        }
+
+        trackRepository.saveAll(trackList);
+
+        newRecord.setTracks(trackList);
 
         return new ResponseEntity<>(repository.save(newRecord), HttpStatus.CREATED);
     }
@@ -176,8 +192,6 @@ public class RecordController {
                     Record newRecord = repository.save(record);
 
                     newRecord.setNameFormatted(newRecord.getName() + newRecord.getId());
-
-                    //TODO create method like CollectorController.addRecordToCollectorById to add artist to record
 
                     connectArtistToRecord(newArtist.getId(), newRecord.getId());
 

@@ -1,5 +1,6 @@
 package com.recordcollection.recorddatabase.controllers;
 
+
 import com.recordcollection.recorddatabase.models.Artist;
 import com.recordcollection.recorddatabase.models.Collector;
 import com.recordcollection.recorddatabase.models.Comment;
@@ -12,12 +13,15 @@ import com.recordcollection.recorddatabase.repositories.CollectorRepository;
 import com.recordcollection.recorddatabase.repositories.CommentRepository;
 import com.recordcollection.recorddatabase.repositories.RecordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.util.*;
 
 @CrossOrigin
@@ -32,6 +36,19 @@ public class RecordController {
     private CollectorRepository collectorRepository;
     @Autowired
     private CommentRepository commentRepository;
+
+    @Value("${Spring.datasource.driver-class-name}")
+    private String myDriver;
+
+    @Value("${Spring.datasource.url}")
+    private String myUrl;
+
+    @Value("${Spring.datasource.username}")
+    private String username;
+
+    @Value("${Spring.datasource.password}")
+    private String password;
+
 
     @GetMapping
     public List<Record> getAllRecords() {
@@ -161,6 +178,8 @@ public class RecordController {
                     newRecord.setNameFormatted(newRecord.getName() + newRecord.getId());
 
                     //TODO create method like CollectorController.addRecordToCollectorById to add artist to record
+
+                    connectArtistToRecord(newArtist.getId(), newRecord.getId());
 
                 }
             }
@@ -324,6 +343,28 @@ public class RecordController {
         artistRepository.delete(selArtist.get());
 
         return new ResponseEntity<>("Artist Deleted", HttpStatus.OK);
+    }
+
+    //method to add artist to collector via database connection
+
+    private void connectArtistToRecord(Long artistId, Long recordId) {
+        Artist selArtist = artistRepository.findById(artistId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        Record selRecord = repository.findById(recordId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        try {
+            Connection conn = DriverManager.getConnection(myUrl, username, password);
+            Class.forName(myDriver);
+            String query = "INSERT INTO artist_records (artist_id, records_id) VALUES (?, ?)";
+            PreparedStatement statement = conn.prepareStatement(query);
+
+            statement.setString(1, Long.toString(selArtist.getId()));
+            statement.setString(2, Long.toString(selRecord.getId()));
+
+            statement.executeUpdate();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
 

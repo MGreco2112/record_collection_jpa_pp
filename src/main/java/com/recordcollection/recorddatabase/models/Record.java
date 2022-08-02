@@ -18,8 +18,12 @@ public class Record {
     private String nameFormatted;
     private String releaseYear;
     private String numberOfTracks;
-    private String[] tracks; //refactor to Entity OneToMany with new Track Entity
+//    private String[] tracks; //refactor to Entity OneToMany with new Track Entity
     private String imageLink;
+
+    @OneToMany(mappedBy = "record", fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("record")
+    private Set<Track> tracks;
 
     @ManyToOne
     @JoinColumn(name = "artist_id", referencedColumnName = "id")
@@ -47,36 +51,13 @@ public class Record {
 
     }
 
-    public Record(String name, String nameFormatted, String releaseYear, String numberOfTracks, String[] tracks, String imageLink) {
+    public Record(String name, String nameFormatted, String releaseYear, String numberOfTracks, Set<Track> tracks, String imageLink) {
         this.name = name;
         this.nameFormatted = nameFormatted;
         this.releaseYear = releaseYear;
         this.numberOfTracks = numberOfTracks;
         this.tracks = tracks;
         this.imageLink = imageLink;
-    }
-
-    public Record(String name, String nameFormatted, String releaseYear, String numberOfTracks, List<String> tracks, String imageLink) {
-        this.name = name;
-        this.nameFormatted = nameFormatted;
-        this.releaseYear = releaseYear;
-        this.numberOfTracks = numberOfTracks;
-        this.tracks = formatTracks(tracks);
-        this.imageLink = imageLink;
-    }
-
-    private String[] formatTracks(List<String> tracks) {
-        String[] tracksArr = new String[tracks.size()];
-
-        int index = 0;
-
-        for (String track : tracks) {
-            tracksArr[index] = track;
-
-            index++;
-        }
-
-        return tracksArr;
     }
 
     public Long getId() {
@@ -119,11 +100,11 @@ public class Record {
         this.numberOfTracks = numberOfTracks;
     }
 
-    public String[] getTracks() {
+    public Set<Track> getTracks() {
         return tracks;
     }
 
-    public void setTracks(String[] tracks) {
+    public void setTracks(Set<Track> tracks) {
         this.tracks = tracks;
     }
 

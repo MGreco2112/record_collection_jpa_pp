@@ -1,6 +1,7 @@
 package com.recordcollection.recorddatabase.controllers;
 
 import com.recordcollection.recorddatabase.models.Artist;
+import com.recordcollection.recorddatabase.models.Track;
 import com.recordcollection.recorddatabase.models.auth.User;
 import com.recordcollection.recorddatabase.models.discogs.DiscogsArtist;
 import com.recordcollection.recorddatabase.models.discogs.DiscogsRecord;
@@ -198,24 +199,35 @@ public class DiscogsApiController {
             return null;
         }
 
-        int tracklistCount = 0;
+//        int tracklistCount = 0;
+//
+//        List<String> tracklist = new ArrayList<>();
+//
+//        for (DiscogsRecord.Track track : discogsRecord.getTracklist()) {
+//            tracklist.add(track.getTitle());
+//
+//            tracklistCount++;
+//        }
 
-        List<String> tracklist = new ArrayList<>();
-
-        for (DiscogsRecord.Track track : discogsRecord.getTracklist()) {
-            tracklist.add(track.getTitle());
-
-            tracklistCount++;
-        }
 
         Record formattedRecord = new Record(
                 discogsRecord.getTitle(),
                 discogsRecord.getTitle().replace(" ", "_"),
                 discogsRecord.getYear().toString(),
-                Integer.toString(tracklistCount),
-                tracklist,
+                null,
+                null,
                 discogsRecord.getImages()[0].getUri()
         );
+
+        Set<Track> trackList = new HashSet<>();
+
+        for (DiscogsRecord.Track track : discogsRecord.getTracklist()) {
+            Track newTrack = new Track(track.getTitle());
+            trackList.add(newTrack);
+        }
+
+        formattedRecord.setNumberOfTracks(Integer.toString(trackList.size()));
+        formattedRecord.setTracks(trackList);
 
         List<String> members = new ArrayList<>();
 

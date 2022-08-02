@@ -143,7 +143,7 @@ public class RecordController {
 
         Record newRecord = repository.save(new Record(
                 record.getName(),
-                "",
+                record.getName(),
                 record.getReleaseUear(),
                 record.getNumberOfTracks(),
                 null,

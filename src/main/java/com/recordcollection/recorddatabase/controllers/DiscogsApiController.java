@@ -13,6 +13,7 @@ import com.recordcollection.recorddatabase.payloads.api.response.DiscogsRecordSe
 import com.recordcollection.recorddatabase.repositories.ArtistRepository;
 import com.recordcollection.recorddatabase.repositories.CollectorRepository;
 import com.recordcollection.recorddatabase.repositories.RecordRepository;
+import com.recordcollection.recorddatabase.repositories.TrackRepository;
 import com.recordcollection.recorddatabase.services.UserService;
 import com.recordcollection.recorddatabase.models.Record;
 import kong.unirest.PagedList;
@@ -39,6 +40,8 @@ public class DiscogsApiController {
     private ArtistRepository artistRepository;
     @Autowired
     private CollectorRepository collectorRepository;
+    @Autowired
+    private TrackRepository trackRepository;
 
     @Value("${recorddatabase.app.testURL}")
     private String testURL;
@@ -155,8 +158,23 @@ public class DiscogsApiController {
         }
         artistRepository.save(discogsRecord.getArtist());
 
+        Record savedRecord = recordRepository.save(discogsRecord);
 
-        return new ResponseEntity<>(recordRepository.save(discogsRecord), HttpStatus.CREATED);
+        //TODO refactor so tracks are saved in the correct order
+
+        Set<Track> trackList = new LinkedHashSet<>();
+
+        for (Track track : savedRecord.getTracks()) {
+            Track newTrack = new Track(track.getTitle(), savedRecord);
+
+            trackList.add(newTrack);
+        }
+
+        trackRepository.saveAll(trackList);
+
+        savedRecord.setTracks(trackList);
+
+        return new ResponseEntity<>(recordRepository.save(savedRecord), HttpStatus.CREATED);
     }
 
     @PostMapping("/convertBulkRecords")
@@ -219,7 +237,7 @@ public class DiscogsApiController {
                 discogsRecord.getImages()[0].getUri()
         );
 
-        Set<Track> trackList = new HashSet<>();
+        Set<Track> trackList = new LinkedHashSet<>();
 
         for (DiscogsRecord.Track track : discogsRecord.getTracklist()) {
             Track newTrack = new Track(track.getTitle());

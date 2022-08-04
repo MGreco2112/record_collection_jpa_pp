@@ -14,6 +14,7 @@ public class Artist {
     private Long id;
     private String artistName;
     private String artistNameFormatted;
+    //refactor to create Members Entity
     private String[] members;
 
     @OneToMany

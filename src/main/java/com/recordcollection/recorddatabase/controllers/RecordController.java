@@ -292,6 +292,11 @@ public class RecordController {
         }
         if (update.getTracks() != null) {
             selRecord.setTracks(update.getTracks());
+            /*
+            delete all current tracks from repo
+            create new trackList LinkedHashSet with title and record from update
+            save all in repo
+             */
         }
         if (update.getArtist() != null) {
             selRecord.setArtist(update.getArtist());

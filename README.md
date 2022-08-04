@@ -4,9 +4,9 @@
 A Spring Web routing system for connecting the frontend to a MySQL
 Server and providing Authentication through JWT Tokens.
 
-  To Run, please have MySQL installed and configured on whatever
-  device you will be running this application on. For more on that
-  please reference the Running Locally section.
+To Run, please have MySQL installed and configured on whatever
+device you will be running this application on. For more on that
+please reference the Running Locally section.
 
 For best results, also download [The Vinyl Hub Frontend](https://github.com/MGreco2112/RecordCollectionFrontend)
 ## Run Locally
@@ -157,3 +157,58 @@ PUT /api/records
 | :-------- | :------- | :-------------------------------- |
 | `record` | `object` | **Required** {<key_to_update>: <update_value>, <optional_keys_&_values>} |
 
+
+
+
+## Discogs API
+
+The Vinyl Hub has accessability for its Admin users to utilize Discogs internal
+
+search engine and Database via their OAuth system.
+
+Below are the requirements:
+
+### Discogs
+
+To utilize Discogs routes, an API key and API secret must be obtained through
+
+a Discogs account on [Discogs.com](https://www.discogs.com/). With an account created navigate to Settings
+
+then to Developers, and finally to Create Application. You will then be given values
+
+to add to your Application.Properties inside this application.
+
+### Application.Properties
+
+These fields must be created within Application.Properties for the
+
+DiscogsApiController to operate. Their values will need to come from the
+
+Discogs Developer Application tab unless provided herein:
+
+ ```
+recorddatabase.app.consumerKey=<Discogs_Consumer_Key>
+recorddatabase.app.consumerSecret=<Discogs_Consumer_Secret>
+recorddatabase.app.requestTokenURL=https://api.discogs.com/oauth/request_token
+recorddatabase.app.authorizeURL=https://www.discogs.com/oauth/authorize
+recorddatabase.app.accessTokenURL=https://api.discogs.com/oauth/access_token
+recorddatabase.app.callbackURL=<Frontend_Address>/login
+recorddatabase.app.testURL=https://api.discogs.com/releases/249504
+recorddatabase.app.searchReleaseURL=https://api.discogs.com/database/search?format=album&release_title=
+recorddatabase.app.searchArtistURL=https://api.discogs.com/database/search?title=
+recorddatabase.app.artistInfoPageURL=https://api.discogs.com/artists/
+ ```
+
+### Frontend Navigation
+
+The Discogs API Oauth Flow can be interfaced through an unlisted route on the
+
+Frontend, through use of the `<Frontend_Address>/admin/create_access_account`.
+
+This route will allow a user to be created as normal, but will also navigate the user to
+
+the Discogs site to allow for generation of an OAuth Token to be stored within the
+
+Database. This token is used for interfacing with the Discogs API in the Admin only
+
+Frontend option for Discogs Search.

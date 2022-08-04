@@ -28,6 +28,11 @@ public class Track {
         this.record = record;
     }
 
+    public Track(Long id, String title) {
+        this.id = id;
+        this.title = title;
+    }
+
     public Long getId() {
         return id;
     }

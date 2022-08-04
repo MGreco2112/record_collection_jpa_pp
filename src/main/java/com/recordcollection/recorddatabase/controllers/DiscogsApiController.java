@@ -160,11 +160,10 @@ public class DiscogsApiController {
 
         Record savedRecord = recordRepository.save(discogsRecord);
 
-        //TODO refactor so tracks are saved in the correct order
-
         Set<Track> trackList = new LinkedHashSet<>();
 
         for (Track track : savedRecord.getTracks()) {
+            System.out.println(track.getTitle());
             Track newTrack = new Track(track.getTitle(), savedRecord);
 
             trackList.add(newTrack);
@@ -217,17 +216,6 @@ public class DiscogsApiController {
             return null;
         }
 
-//        int tracklistCount = 0;
-//
-//        List<String> tracklist = new ArrayList<>();
-//
-//        for (DiscogsRecord.Track track : discogsRecord.getTracklist()) {
-//            tracklist.add(track.getTitle());
-//
-//            tracklistCount++;
-//        }
-
-
         Record formattedRecord = new Record(
                 discogsRecord.getTitle(),
                 discogsRecord.getTitle().replace(" ", "_"),
@@ -239,8 +227,10 @@ public class DiscogsApiController {
 
         Set<Track> trackList = new LinkedHashSet<>();
 
+        Long id = 1L;
+
         for (DiscogsRecord.Track track : discogsRecord.getTracklist()) {
-            Track newTrack = new Track(track.getTitle());
+            Track newTrack = new Track(id++, track.getTitle());
             trackList.add(newTrack);
         }
 

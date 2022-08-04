@@ -6,6 +6,7 @@ import com.recordcollection.recorddatabase.models.Record;
 import com.recordcollection.recorddatabase.payloads.request.ArtistAddRequest;
 import com.recordcollection.recorddatabase.payloads.request.NewRecordRequest;
 import com.recordcollection.recorddatabase.payloads.request.RecordExistsRequest;
+import com.recordcollection.recorddatabase.payloads.request.SaveDiscogsRecordRequest;
 import com.recordcollection.recorddatabase.payloads.response.EditArtistResponse;
 import com.recordcollection.recorddatabase.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -167,33 +168,74 @@ public class RecordController {
     }
 
     @PostMapping("/bulkAddRecords_Artists")
-    public ResponseEntity<String> addBulkRecords(@RequestBody List<Record> records) {
-        for (Record record : records) {
+    public ResponseEntity<String> addBulkRecords(@RequestBody List<SaveDiscogsRecordRequest> records) {
+        for (SaveDiscogsRecordRequest record : records) {
                 Artist artist = artistRepository.getArtistByName(record.getArtist().getArtistName());
+
+                Record newRecord = new Record(
+                        record.getName(),
+                        record.getNameFormatted(),
+                        record.getReleaseYear(),
+                        record.getNumberOfTracks(),
+                        null,
+                        record.getImageLink()
+                );
+
+                repository.save(newRecord);
 
                 if (artist == null) {
                     Artist newArtist = createNewArtist(record.getArtist()).getBody();
 
                     assert newArtist != null;
-                    newArtist.setRecords(new HashSet<>(List.of(record)));
-                    record.setArtist(newArtist);
+                    newArtist.setRecords(new HashSet<>(List.of(newRecord)));
+                    newRecord.setArtist(newArtist);
 
-                    Record newRecord = repository.save(record);
+                    Set<Track> trackList = new LinkedHashSet<>();
 
-                    newRecord.setNameFormatted(newRecord.getName() + newRecord.getId());
+                    for (Track track : record.getTracks()) {
+                        Track newTrack = new Track(track.getTitle(), newRecord);
+                        trackList.add(newTrack);
+                    }
+
+                    trackRepository.saveAll(trackList);
+
+                    newRecord.setTracks(trackList);
+
+                    newRecord.setNameFormatted(newRecord.getName().replaceAll(" ", "_") + "_" + newRecord.getId());
+
+                    repository.save(newRecord);
 
                     Artist updateNewArtist = artistRepository.save(newArtist);
 
                     updateNewArtist.setArtistNameFormatted(updateNewArtist.getArtistName() + updateNewArtist.getId());
+
+                    artistRepository.save(updateNewArtist);
                 } else {
 
                     Artist newArtist = artistRepository.save(artist);
 
-                    Record newRecord = repository.save(record);
+                    Set<Track> trackList = new LinkedHashSet<>();
 
-                    newRecord.setNameFormatted(newRecord.getName() + newRecord.getId());
+                    for (Track track : record.getTracks()) {
+                        Track newTrack = new Track(track.getTitle(), newRecord);
+                        trackList.add(newTrack);
+                    }
 
-                    connectArtistToRecord(newArtist.getId(), newRecord.getId());
+                    trackRepository.saveAll(trackList);
+
+                    newRecord.setTracks(trackList);
+
+                    repository.save(newRecord);
+
+                    newRecord.setNameFormatted(newRecord.getName().replaceAll(" ", "_") + "_" + newRecord.getId());
+
+                    newRecord.setArtist(newArtist);
+
+                    repository.save(newRecord);
+
+                    newArtist.getRecords().add(newRecord);
+
+                    artistRepository.save(newArtist);
 
                 }
             }
@@ -363,25 +405,25 @@ public class RecordController {
 
     //method to add artist to collector via database connection
 
-    private void connectArtistToRecord(Long artistId, Long recordId) {
-        Artist selArtist = artistRepository.findById(artistId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-        Record selRecord = repository.findById(recordId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-        try {
-            Connection conn = DriverManager.getConnection(myUrl, username, password);
-            Class.forName(myDriver);
-            String query = "INSERT INTO artist_records (artist_id, records_id) VALUES (?, ?)";
-            PreparedStatement statement = conn.prepareStatement(query);
-
-            statement.setString(1, Long.toString(selArtist.getId()));
-            statement.setString(2, Long.toString(selRecord.getId()));
-
-            statement.executeUpdate();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-    }
+//    private void connectArtistToRecord(Long artistId, Long recordId) {
+//        Artist selArtist = artistRepository.findById(artistId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+//
+//        Record selRecord = repository.findById(recordId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+//
+//        try {
+//            Connection conn = DriverManager.getConnection(myUrl, username, password);
+//            Class.forName(myDriver);
+//            String query = "INSERT INTO artist_records (artist_id, records_id) VALUES (?, ?)";
+//            PreparedStatement statement = conn.prepareStatement(query);
+//
+//            statement.setString(1, Long.toString(selArtist.getId()));
+//            statement.setString(2, Long.toString(selRecord.getId()));
+//
+//            statement.executeUpdate();
+//        } catch (Exception e) {
+//            System.out.println(e.getMessage());
+//        }
+//    }
 
 
 }

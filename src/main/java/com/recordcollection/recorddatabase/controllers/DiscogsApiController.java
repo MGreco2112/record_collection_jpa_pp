@@ -170,9 +170,17 @@ public class DiscogsApiController {
                 discogsRecord.getImageLink()
         );
 
-        newRecord.setArtist(discogsRecord.getArtist());
+        Artist checkArtistRepo = artistRepository.getArtistByName(discogsRecord.getArtist().getArtistName());
 
-        artistRepository.save(discogsRecord.getArtist());
+        if (checkArtistRepo != null) {
+            newRecord.setArtist(checkArtistRepo);
+        } else {
+            newRecord.setArtist(discogsRecord.getArtist());
+        }
+
+        Artist savedArtist = artistRepository.save(newRecord.getArtist());
+
+        savedArtist.setArtistNameFormatted(savedArtist.getArtistName().replaceAll(" ", "_") + "_" + savedArtist.getId());
 
         Record savedRecord = recordRepository.save(newRecord);
 
@@ -187,6 +195,8 @@ public class DiscogsApiController {
         trackRepository.saveAll(trackList);
 
         savedRecord.setTracks(trackList);
+
+        savedRecord.setNameFormatted(savedRecord.getName().replaceAll(" ", "_") + "_" + savedRecord.getId());
 
         return new ResponseEntity<>(recordRepository.save(savedRecord), HttpStatus.CREATED);
     }

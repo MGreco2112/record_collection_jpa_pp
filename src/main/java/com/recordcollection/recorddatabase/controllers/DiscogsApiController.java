@@ -10,6 +10,7 @@ import com.recordcollection.recorddatabase.models.discogs.FullDiscogsArtist;
 import com.recordcollection.recorddatabase.payloads.api.request.DiscogsRecordUrlRequest;
 import com.recordcollection.recorddatabase.payloads.api.response.DiscogsArtistSearchResponse;
 import com.recordcollection.recorddatabase.payloads.api.response.DiscogsRecordSearchResponse;
+import com.recordcollection.recorddatabase.payloads.request.SaveDiscogsRecordRequest;
 import com.recordcollection.recorddatabase.repositories.ArtistRepository;
 import com.recordcollection.recorddatabase.repositories.CollectorRepository;
 import com.recordcollection.recorddatabase.repositories.RecordRepository;
@@ -150,20 +151,34 @@ public class DiscogsApiController {
     }
 
     @PostMapping("/saveDiscogsRecord")
-    public ResponseEntity<Record> saveDiscogsRecord(@RequestBody Record discogsRecord) {
+    public ResponseEntity<Record> saveDiscogsRecord(@RequestBody SaveDiscogsRecordRequest discogsRecord) {
         Record checkRepository = recordRepository.getRecordByName(discogsRecord.getName());
 
         if (checkRepository != null) {
+
+            //if discogsRecord.tracklist == checkRepository.tracklist
+                //return checkRepository
             return new ResponseEntity<>(checkRepository, HttpStatus.OK);
         }
+
+        Record newRecord = new Record(
+                discogsRecord.getName(),
+                discogsRecord.getNameFormatted(),
+                discogsRecord.getReleaseYear(),
+                discogsRecord.getNumberOfTracks(),
+                null,
+                discogsRecord.getImageLink()
+        );
+
+        newRecord.setArtist(discogsRecord.getArtist());
+
         artistRepository.save(discogsRecord.getArtist());
 
-        Record savedRecord = recordRepository.save(discogsRecord);
+        Record savedRecord = recordRepository.save(newRecord);
 
         Set<Track> trackList = new LinkedHashSet<>();
 
-        for (Track track : savedRecord.getTracks()) {
-            System.out.println(track.getTitle());
+        for (Track track : discogsRecord.getTracks()) {
             Track newTrack = new Track(track.getTitle(), savedRecord);
 
             trackList.add(newTrack);

@@ -1,9 +1,11 @@
 package com.recordcollection.recorddatabase.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -15,20 +17,24 @@ public class Artist {
     private String artistName;
     private String artistNameFormatted;
     //refactor to create Members Entity
-    private String[] members;
+//    private String[] members;
 
     @OneToMany
     @JsonIgnoreProperties({"artist", "comments"})
     private Set<Record> records;
 
+    @OneToMany(mappedBy = "artist", fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("artist")
+    @OrderBy("name ASC")
+    private Set<Member> members;
+
     public Artist() {
 
     }
 
-    public Artist(String artistName, String artistNameFormatted, String[] members) {
+    public Artist(String artistName, String artistNameFormatted) {
         this.artistName = artistName;
         this.artistNameFormatted = artistNameFormatted;
-        this.members = members;
     }
 
     public Artist(String artistName, String artistNameFormatted, List<String> members) {
@@ -37,18 +43,14 @@ public class Artist {
         this.members = formatMembers(members);
     }
 
-    private String[] formatMembers(List<String> members) {
-        String[] formattedMembers = new String[members.size()];
+    private Set<Member> formatMembers(List<String> members) {
+        Set<Member> memberSet = new HashSet<>();
 
-        int index = 0;
-
-        for (String member : members) {
-            formattedMembers[index] = member;
-
-            index++;
+        for (String memberName : members) {
+            memberSet.add(new Member(memberName, this));
         }
 
-        return formattedMembers;
+        return memberSet;
     }
 
     public Long getId() {
@@ -75,11 +77,11 @@ public class Artist {
         this.artistNameFormatted = artistNameFormatted;
     }
 
-    public String[] getMembers() {
+    public Set<Member> getMembers() {
         return members;
     }
 
-    public void setMembers(String[] members) {
+    public void setMembers(Set<Member> members) {
         this.members = members;
     }
 

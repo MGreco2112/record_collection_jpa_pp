@@ -90,7 +90,13 @@ public class RecordController {
     public ResponseEntity<EditArtistResponse> getEditArtistByName(@PathVariable Long id) {
         Artist selArtist = artistRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        EditArtistResponse newResponse = new EditArtistResponse(selArtist.getId(), selArtist.getArtistName(), Arrays.asList(selArtist.getMembers()));
+        List<String> members = new ArrayList<>();
+
+        for (Member name : selArtist.getMembers()) {
+            members.add(name.getName());
+        }
+
+        EditArtistResponse newResponse = new EditArtistResponse(selArtist.getId(), selArtist.getArtistName(), members);
 
         return ResponseEntity.ok(newResponse);
     }

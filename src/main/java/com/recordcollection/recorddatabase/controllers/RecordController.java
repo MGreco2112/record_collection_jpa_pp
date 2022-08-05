@@ -35,6 +35,8 @@ public class RecordController {
     private CollectorRepository collectorRepository;
     @Autowired
     private CommentRepository commentRepository;
+    @Autowired
+    private MemberRepository memberRepository;
 
     @Value("${Spring.datasource.driver-class-name}")
     private String myDriver;
@@ -196,6 +198,8 @@ public class RecordController {
                     newArtist.setRecords(new HashSet<>(List.of(newRecord)));
                     newRecord.setArtist(newArtist);
 
+                    //todo insert member formatting for NewArtist and save to Repo
+
                     Set<Track> trackList = new LinkedHashSet<>();
 
                     for (Track track : record.getTracks()) {
@@ -255,6 +259,9 @@ public class RecordController {
         Artist newArtist = artistRepository.save(artist);
 
         newArtist.setArtistNameFormatted(newArtist.getArtistName() + "_" + newArtist.getId());
+
+        //todo insert member formatting for NewArtist and save to Repo
+
 
         return new ResponseEntity<>(artistRepository.save(artist), HttpStatus.CREATED);
     }
@@ -328,6 +335,9 @@ public class RecordController {
         }
         if (updates.getMembers() != null) {
             selArtist.setMembers(updates.getMembers());
+
+            //todo insert member formatting for NewArtist and save to Repo
+
         }
         if (updates.getRecords() != null) {
             selArtist.setRecords(updates.getRecords());
@@ -390,6 +400,9 @@ public class RecordController {
         Record selRecord = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         selRecord.setArtist(null);
+
+        //todo save members into memberRepository
+
 
         return new ResponseEntity<>(repository.save(selRecord), HttpStatus.OK);
     }

@@ -3,10 +3,7 @@ package com.recordcollection.recorddatabase.controllers;
 
 import com.recordcollection.recorddatabase.models.*;
 import com.recordcollection.recorddatabase.models.Record;
-import com.recordcollection.recorddatabase.payloads.request.ArtistAddRequest;
-import com.recordcollection.recorddatabase.payloads.request.NewRecordRequest;
-import com.recordcollection.recorddatabase.payloads.request.RecordExistsRequest;
-import com.recordcollection.recorddatabase.payloads.request.SaveDiscogsRecordRequest;
+import com.recordcollection.recorddatabase.payloads.request.*;
 import com.recordcollection.recorddatabase.payloads.response.EditArtistResponse;
 import com.recordcollection.recorddatabase.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -192,13 +189,23 @@ public class RecordController {
                 repository.save(newRecord);
 
                 if (artist == null) {
-                    Artist newArtist = createNewArtist(record.getArtist()).getBody();
+                    List<String> membersList = new ArrayList<>();
+
+                    for (Member member : record.getArtist().getMembers()) {
+                        membersList.add(member.getName());
+                    }
+
+                    PostArtistRequest request = new PostArtistRequest(
+                            record.getArtist().getArtistName(),
+                            record.getArtist().getArtistNameFormatted(),
+                            membersList
+                    );
+
+                    Artist newArtist = createNewArtist(request).getBody();
 
                     assert newArtist != null;
                     newArtist.setRecords(new HashSet<>(List.of(newRecord)));
                     newRecord.setArtist(newArtist);
-
-                    //todo insert member formatting for NewArtist and save to Repo
 
                     Set<Track> trackList = new LinkedHashSet<>();
 
@@ -254,16 +261,30 @@ public class RecordController {
     }
 
     @PostMapping("/artist")
-    public ResponseEntity<Artist> createNewArtist(@RequestBody Artist artist) {
+    public ResponseEntity<Artist> createNewArtist(@RequestBody PostArtistRequest artist) {
 
-        Artist newArtist = artistRepository.save(artist);
+        Artist newArtist = artistRepository.save(new Artist(
+                artist.getArtistName(),
+                artist.getArtistNameFormatted(),
+                null
+        ));
+
+        Set<Member> members = new HashSet<>();
+
+        for (String member : artist.getMembers()) {
+            Member newMember = new Member(member, newArtist);
+
+            members.add(newMember);
+        }
+
+        memberRepository.saveAll(members);
 
         newArtist.setArtistNameFormatted(newArtist.getArtistName() + "_" + newArtist.getId());
 
         //todo insert member formatting for NewArtist and save to Repo
 
 
-        return new ResponseEntity<>(artistRepository.save(artist), HttpStatus.CREATED);
+        return new ResponseEntity<>(artistRepository.save(newArtist), HttpStatus.CREATED);
     }
 
     @PostMapping("/artistAdd")

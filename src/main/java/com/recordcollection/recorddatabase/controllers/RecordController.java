@@ -343,7 +343,7 @@ public class RecordController {
     }
 
     @PutMapping("/artist/{id}")
-    public ResponseEntity<Artist> updateArtistById(@PathVariable Long id, @RequestBody Artist updates) {
+    public ResponseEntity<Artist> updateArtistById(@PathVariable Long id, @RequestBody UpdateArtistRequest updates) {
         Artist selArtist = artistRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         if (updates.getArtistName() != null) {
@@ -355,9 +355,17 @@ public class RecordController {
             selArtist.setArtistNameFormatted(updates.getArtistNameFormatted() + "_" + selArtist.getId());
         }
         if (updates.getMembers() != null) {
-            selArtist.setMembers(updates.getMembers());
+            Set<Member> updatedMembers = new HashSet<>();
 
-            //todo insert member formatting for NewArtist and save to Repo
+            for (String member : updates.getMembers()) {
+                updatedMembers.add(new Member(member, selArtist));
+            }
+
+            memberRepository.saveAll(updatedMembers);
+
+            memberRepository.deleteAll(selArtist.getMembers());
+
+            selArtist.setMembers(updatedMembers);
 
         }
         if (updates.getRecords() != null) {
@@ -422,9 +430,6 @@ public class RecordController {
 
         selRecord.setArtist(null);
 
-        //todo save members into memberRepository
-
-
         return new ResponseEntity<>(repository.save(selRecord), HttpStatus.OK);
     }
 
@@ -442,6 +447,8 @@ public class RecordController {
         }
 
         artistRepository.save(selArtist.get());
+
+        memberRepository.deleteAll(selArtist.get().getMembers());
 
         artistRepository.delete(selArtist.get());
 

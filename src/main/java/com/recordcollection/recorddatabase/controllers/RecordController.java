@@ -265,8 +265,7 @@ public class RecordController {
 
         Artist newArtist = artistRepository.save(new Artist(
                 artist.getArtistName(),
-                artist.getArtistNameFormatted(),
-                null
+                artist.getArtistNameFormatted()
         ));
 
         Set<Member> members = new HashSet<>();
@@ -280,9 +279,6 @@ public class RecordController {
         memberRepository.saveAll(members);
 
         newArtist.setArtistNameFormatted(newArtist.getArtistName() + "_" + newArtist.getId());
-
-        //todo insert member formatting for NewArtist and save to Repo
-
 
         return new ResponseEntity<>(artistRepository.save(newArtist), HttpStatus.CREATED);
     }

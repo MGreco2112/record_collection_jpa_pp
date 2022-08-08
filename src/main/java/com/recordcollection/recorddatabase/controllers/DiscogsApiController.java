@@ -1,9 +1,9 @@
 package com.recordcollection.recorddatabase.controllers;
 
 import com.recordcollection.recorddatabase.models.Artist;
+import com.recordcollection.recorddatabase.models.Member;
 import com.recordcollection.recorddatabase.models.Track;
 import com.recordcollection.recorddatabase.models.auth.User;
-import com.recordcollection.recorddatabase.models.discogs.DiscogsArtist;
 import com.recordcollection.recorddatabase.models.discogs.DiscogsRecord;
 import com.recordcollection.recorddatabase.models.discogs.DiscogsSearchResults;
 import com.recordcollection.recorddatabase.models.discogs.FullDiscogsArtist;
@@ -11,13 +11,9 @@ import com.recordcollection.recorddatabase.payloads.api.request.DiscogsRecordUrl
 import com.recordcollection.recorddatabase.payloads.api.response.DiscogsArtistSearchResponse;
 import com.recordcollection.recorddatabase.payloads.api.response.DiscogsRecordSearchResponse;
 import com.recordcollection.recorddatabase.payloads.request.SaveDiscogsRecordRequest;
-import com.recordcollection.recorddatabase.repositories.ArtistRepository;
-import com.recordcollection.recorddatabase.repositories.CollectorRepository;
-import com.recordcollection.recorddatabase.repositories.RecordRepository;
-import com.recordcollection.recorddatabase.repositories.TrackRepository;
+import com.recordcollection.recorddatabase.repositories.*;
 import com.recordcollection.recorddatabase.services.UserService;
 import com.recordcollection.recorddatabase.models.Record;
-import kong.unirest.PagedList;
 import kong.unirest.Unirest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,6 +39,8 @@ public class DiscogsApiController {
     private CollectorRepository collectorRepository;
     @Autowired
     private TrackRepository trackRepository;
+    @Autowired
+    private MemberRepository memberRepository;
 
     @Value("${recorddatabase.app.testURL}")
     private String testURL;
@@ -175,12 +173,26 @@ public class DiscogsApiController {
         if (checkArtistRepo != null) {
             newRecord.setArtist(checkArtistRepo);
         } else {
-            newRecord.setArtist(discogsRecord.getArtist());
+            Artist newArtist = artistRepository.save(new Artist(discogsRecord.getArtist().getArtistName(), null));
+
+            Set<Member> members = new HashSet<>();
+
+            for (Member member : discogsRecord.getArtist().getMembers()) {
+                members.add(new Member(member.getName(), newArtist));
+            }
+
+            memberRepository.saveAll(members);
+
+            newArtist.setMembers(members);
+
+            newRecord.setArtist(newArtist);
         }
 
         Artist savedArtist = artistRepository.save(newRecord.getArtist());
 
         savedArtist.setArtistNameFormatted(savedArtist.getArtistName().replaceAll(" ", "_") + "_" + savedArtist.getId());
+
+        artistRepository.save(savedArtist);
 
         Record savedRecord = recordRepository.save(newRecord);
 

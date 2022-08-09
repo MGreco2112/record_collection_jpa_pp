@@ -5,6 +5,7 @@ import com.recordcollection.recorddatabase.models.*;
 import com.recordcollection.recorddatabase.models.Record;
 import com.recordcollection.recorddatabase.payloads.request.*;
 import com.recordcollection.recorddatabase.payloads.response.EditArtistResponse;
+import com.recordcollection.recorddatabase.payloads.response.EditRecordResponse;
 import com.recordcollection.recorddatabase.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -72,6 +73,29 @@ public class RecordController {
         }
 
         return ResponseEntity.ok(selRecord);
+    }
+
+    @GetMapping("/accessEdit/{id}")
+    public ResponseEntity<EditRecordResponse> getEditRecordResponse(@PathVariable Long id) {
+        Record selRecord = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        LinkedList<String> trackStrings = new LinkedList<>();
+
+        for (Track track : selRecord.getTracks()) {
+            trackStrings.add(track.getTitle());
+        }
+
+        EditRecordResponse response = new EditRecordResponse(
+                selRecord.getId(),
+                selRecord.getName(),
+                selRecord.getNameFormatted(),
+                selRecord.getReleaseYear(),
+                selRecord.getNumberOfTracks(),
+                selRecord.getImageLink(),
+                trackStrings
+        );
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/artist/{name}")
@@ -302,6 +326,7 @@ public class RecordController {
         return new ResponseEntity<>(repository.save(selRecord.get()), HttpStatus.OK);
     }
 
+    //TODO update RequestBody datatype to a RecordUpdateRequest class (not yet created)
     @PutMapping("/{id}")
     public ResponseEntity<Record> updateRecordById(@PathVariable Long id, @RequestBody Record update) {
         Record selRecord = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));

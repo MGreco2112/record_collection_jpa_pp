@@ -378,6 +378,7 @@ public class RecordController {
             selArtist.setArtistNameFormatted(updates.getArtistNameFormatted() + "_" + selArtist.getId());
         }
         if (updates.getMembers() != null) {
+            memberRepository.deleteAll(selArtist.getMembers());
 
             //TODO fix this
             Set<Member> updatedMembers = new HashSet<>();
@@ -388,7 +389,6 @@ public class RecordController {
 
             memberRepository.saveAll(updatedMembers);
 
-            memberRepository.deleteAll(selArtist.getMembers());
 
             selArtist.setMembers(updatedMembers);
 

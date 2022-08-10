@@ -203,7 +203,6 @@ public class AuthController {
         return ResponseEntity.ok(new OauthRequestResponse(response));
     }
 
-    //TODO get functioning to authorize users
     @PostMapping("/discogsAccessToken")
     public ResponseEntity<OauthRequestResponse> giveAccess(@RequestBody DiscogsTokenRequest request) {
         Date date = new Date();

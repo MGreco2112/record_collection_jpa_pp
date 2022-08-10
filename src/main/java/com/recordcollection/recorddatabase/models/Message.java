@@ -24,7 +24,6 @@ public class Message {
     @JoinColumn(name = "receiver_id", referencedColumnName = "id")
     private Collector receiver;
 
-    //TODO add date and time
     private Date dateAndTime = new Date();
 
     public Message() {

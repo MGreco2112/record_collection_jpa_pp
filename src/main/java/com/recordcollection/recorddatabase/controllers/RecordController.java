@@ -326,9 +326,8 @@ public class RecordController {
         return new ResponseEntity<>(repository.save(selRecord.get()), HttpStatus.OK);
     }
 
-    //TODO update RequestBody datatype to a RecordUpdateRequest class (not yet created)
     @PutMapping("/{id}")
-    public ResponseEntity<Record> updateRecordById(@PathVariable Long id, @RequestBody Record update) {
+    public ResponseEntity<Record> updateRecordById(@PathVariable Long id, @RequestBody UpdateRecordRequest update) {
         Record selRecord = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         if (update.getName() != null) {
@@ -346,15 +345,18 @@ public class RecordController {
             selRecord.setNumberOfTracks(update.getNumberOfTracks());
         }
         if (update.getTracks() != null) {
-            selRecord.setTracks(update.getTracks());
-            /*
-            delete all current tracks from repo
-            create new trackList LinkedHashSet with title and record from update
-            save all in repo
-             */
-        }
-        if (update.getArtist() != null) {
-            selRecord.setArtist(update.getArtist());
+            Set<Track> tracks = new LinkedHashSet<>();
+
+            trackRepository.deleteAll(selRecord.getTracks());
+
+            for (String trackName : update.getTracks()) {
+                tracks.add(new Track(trackName, selRecord));
+            }
+
+            trackRepository.saveAll(tracks);
+
+            selRecord.setTracks(tracks);
+
         }
         if (update.getImageLink() != null) {
             selRecord.setImageLink(update.getImageLink());
@@ -376,6 +378,8 @@ public class RecordController {
             selArtist.setArtistNameFormatted(updates.getArtistNameFormatted() + "_" + selArtist.getId());
         }
         if (updates.getMembers() != null) {
+
+            //TODO fix this
             Set<Member> updatedMembers = new HashSet<>();
 
             for (String member : updates.getMembers()) {

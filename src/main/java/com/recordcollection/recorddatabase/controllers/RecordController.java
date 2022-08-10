@@ -380,7 +380,6 @@ public class RecordController {
         if (updates.getMembers() != null) {
             memberRepository.deleteAll(selArtist.getMembers());
 
-            //TODO fix this
             Set<Member> updatedMembers = new HashSet<>();
 
             for (String member : updates.getMembers()) {

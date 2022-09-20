@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StopWatch;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -145,16 +146,38 @@ public class RecordController {
 
     @GetMapping("/search/name/{query}")
     public List<Record> recordsByNameSearchQuery(@PathVariable String query) {
-        return repository.getAllRecordsByNameQuery(query);
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+
+        List<Record> recordList = repository.getAllRecordsByNameQuery(query);
+
+        stopWatch.stop();
+
+        System.out.println("Record Search Query Time (millis):");
+        System.out.println(stopWatch.getLastTaskTimeMillis());
+
+        return recordList;
     }
 
     @GetMapping("/search/artist_name/{query}")
     public List<Artist> artistsByNameSearchQuery(@PathVariable String query) {
-        return artistRepository.getArtistsByNameQuery(query);
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+
+        List<Artist> artistList = artistRepository.getArtistsByNameQuery(query);
+
+        stopWatch.stop();
+
+        System.out.println("Artist Search Query Time (millis):");
+        System.out.println(stopWatch.getLastTaskTimeMillis());
+
+        return artistList;
     }
 
     @GetMapping("/search/recordsWithTrack/{query}")
     public List<Record> recordsByTrackNameSearchQuery(@PathVariable String query) {
+
+        //TODO get this method to return all records as opposed to only the first ascending index
 
         List<Long> recordIds = trackRepository.getRecordIdsByTrackTitle(query);
 
@@ -208,6 +231,9 @@ public class RecordController {
 
     @PostMapping("/bulkAddRecords_Artists")
     public ResponseEntity<String> addBulkRecords(@RequestBody List<SaveDiscogsRecordRequest> records) {
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+
         for (SaveDiscogsRecordRequest record : records) {
                 Artist artist = artistRepository.getArtistByName(record.getArtist().getArtistName());
 
@@ -290,6 +316,13 @@ public class RecordController {
 
                 }
             }
+
+        stopWatch.stop();
+
+        Long processTime = stopWatch.getLastTaskTimeMillis();
+
+        System.out.println("Time to Save (in millis):");
+        System.out.println(processTime);
 
         return ResponseEntity.ok("Saved All");
     }

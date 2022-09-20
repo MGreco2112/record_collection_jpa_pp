@@ -32,4 +32,7 @@ public interface RecordRepository extends JpaRepository<Record, Long> {
 
     @Query(value = "SELECT * FROM record WHERE name = :name", nativeQuery = true)
     List<Record> checkRecordExists(@Param("name") String name);
+
+    //Query to return Records featuring specified Track Name
+    //SELECT * FROM record WHERE id IN (SELECT record_id FROM track WHERE title = 'Fly By Night');
 }

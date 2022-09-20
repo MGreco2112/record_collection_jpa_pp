@@ -155,8 +155,12 @@ public class RecordController {
 
     @GetMapping("/search/recordsWithTrack/{query}")
     public List<Record> recordsByTrackNameSearchQuery(@PathVariable String query) {
-//        return repository.getRecordsContainingTrackTitle(query);
-        return null;
+
+        List<Long> recordIds = trackRepository.getRecordIdsByTrackTitle(query);
+
+        System.out.println(recordIds);
+
+        return repository.getRecordsByBulkIds(recordIds.toString().replace("[", "").replace("]", ""));
     }
 
     //not yet working

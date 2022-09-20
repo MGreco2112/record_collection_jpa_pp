@@ -153,6 +153,12 @@ public class RecordController {
         return artistRepository.getArtistsByNameQuery(query);
     }
 
+    @GetMapping("/search/recordsWithTrack/{query}")
+    public List<Record> recordsByTrackNameSearchQuery(@PathVariable String query) {
+//        return repository.getRecordsContainingTrackTitle(query);
+        return null;
+    }
+
     //not yet working
     @PostMapping(path = "/recordExists", consumes = "application/x-www-form-urlencoded")
     public ResponseEntity<List<Record>> recordExistsByName(@RequestBody RecordExistsRequest request) {

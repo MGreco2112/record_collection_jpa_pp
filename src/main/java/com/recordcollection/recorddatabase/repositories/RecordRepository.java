@@ -34,5 +34,11 @@ public interface RecordRepository extends JpaRepository<Record, Long> {
     List<Record> checkRecordExists(@Param("name") String name);
 
     //Query to return Records featuring specified Track Name
-    //SELECT * FROM record WHERE id IN (SELECT record_id FROM track WHERE title = 'Fly By Night');
+    //SELECT * FROM record WHERE id IN (SELECT record_id FROM track WHERE title LIKE "%title%");
+
+//    @Query(value = "SELECT * FROM record WHERE id IN (SELECT record_id FROM track WHERE title LIKE '%:title%`)", nativeQuery = true)
+//    List<Record> getRecordsContainingTrackTitle(@Param("title") String title);
+
+//    @Query(value = "SELECT * FROM record WHERE record.id IN (SELECT track.record_id FROM track WHERE track.title LIKE '%:title%`) ORDER BY name ASC", nativeQuery = true)
+//    List<Record> getRecordsContainingTrackTitle(@Param("title") String title);
 }

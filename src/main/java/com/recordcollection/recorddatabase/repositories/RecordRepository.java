@@ -37,5 +37,5 @@ public interface RecordRepository extends JpaRepository<Record, Long> {
     //SELECT * FROM record WHERE id IN (SELECT record_id FROM track WHERE title LIKE "%title%");
 
     @Query(value = "SELECT * FROM record WHERE id IN (:recordIds)", nativeQuery = true)
-    List<Record> getRecordsByBulkIds(@Param("recordIds") String ids);
+    List<Record> getRecordsByBulkIds(@Param("recordIds") List<Long> recordIds);
 }

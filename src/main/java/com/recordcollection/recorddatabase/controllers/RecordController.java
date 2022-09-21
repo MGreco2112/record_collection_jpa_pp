@@ -181,9 +181,7 @@ public class RecordController {
 
         List<Long> recordIds = trackRepository.getRecordIdsByTrackTitle(query);
 
-        System.out.println(recordIds);
-
-        return repository.getRecordsByBulkIds(recordIds.toString().replace("[", "").replace("]", ""));
+        return repository.getRecordsByBulkIds(recordIds);
     }
 
     //not yet working

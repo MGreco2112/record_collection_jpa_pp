@@ -146,6 +146,8 @@ public class RecordController {
 
     @GetMapping("/search/name/{query}")
     public List<Record> recordsByNameSearchQuery(@PathVariable String query) {
+        //Current query time approx 68 millis
+
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
@@ -321,6 +323,8 @@ public class RecordController {
 
         System.out.println("Time to Save (in millis):");
         System.out.println(processTime);
+
+        //Current processing time approx 300 millis
 
         return ResponseEntity.ok("Saved All");
     }

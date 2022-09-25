@@ -60,6 +60,11 @@ public class RecordController {
         return artistRepository.getAllArtistsSorted();
     }
 
+    @GetMapping("/tracks")
+    public List<Track> getAllTracks() {
+        return trackRepository.findAll();
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Record> getRecordById(@PathVariable Long id) {
         return new ResponseEntity<>(repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)), HttpStatus.OK);

@@ -62,6 +62,7 @@ public class RecordController {
 
     @GetMapping("/tracks")
     public List<Track> getAllTracks() {
+        //600,000 tracks takes 3.34 seconds to populate in Postman
         return trackRepository.findAll();
     }
 

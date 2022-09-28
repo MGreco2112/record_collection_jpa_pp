@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface TrackRepository extends JpaRepository<Track, Long> {
 
-    @Query(value = "SELECT * FROM track WHERE title LIKE %:query% ORDER BY title ASC", nativeQuery = true)
+    @Query(value = "SELECT * FROM track WHERE title LIKE :query% ORDER BY title ASC", nativeQuery = true)
     List<Track> getTracksByTitle(@Param("query") String query);
 
     @Query(value = "SELECT record_id FROM track WHERE title LIKE %:query% ORDER BY title ASC", nativeQuery = true)

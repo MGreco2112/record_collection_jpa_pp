@@ -62,7 +62,7 @@ public class RecordController {
 
     @GetMapping("/tracks")
     public List<Track> getAllTracks() {
-        //600,000 tracks takes 3.34 seconds to populate in Postman
+        //400,000 tracks takes 3.34 seconds to populate in Postman
         return trackRepository.findAll();
     }
 
@@ -194,6 +194,9 @@ public class RecordController {
         //LAST batch takes 193 Millis
 
         //POST INDEX CALCULATIONS
+        //FIRST BATCH takes 18 millis
+        //MIDDLE batch takes 21 Millis
+        //Last batch takes 27 Millis
 
         List<Long> recordIds = trackRepository.getRecordIdsByTrackTitle(query);
 

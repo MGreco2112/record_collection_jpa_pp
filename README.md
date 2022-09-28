@@ -1,4 +1,14 @@
 
+# Performance Enhancement
+
+Performance of the App is best when utilizing multiple custom MySQL Indexes for each of the Database Entities.
+This project was tested with a dataset of 400,000 Tracks before and after the implimentation of an Index
+and the performance via API call response reflects the improved Indexing system; organizing the data not only by
+its Primary Key but also by the multiple ways data is queried from the Database. Using this Indexing system has dropped
+the access time from an average of 200 Milliseconds to an average of 20 Milliseconds when working with the listed dataset
+of 400,000 entities. This improvement was measured via API calls through Postman and their implemented response timer and a
+Java StopWatch instance both before and after the MySQL Index was implemented.
+
 # The Vinyl Hub Backend
 
 A Spring Web routing system for connecting the frontend to a MySQL
@@ -35,6 +45,28 @@ Grant Permissions
 
 ``` MySQL
 GRANT all ON <database_name>.* TO '<username>'@'%';
+```
+
+### Indexes:
+
+For optimized access to the database, it is recommended that the following Indexes be created on the specified tables
+
+Record:
+``` MySQL
+CREATE INDEX record_name_idx
+ON record (name);
+```
+
+Artist:
+``` MySQL
+CREATE INDEX artist_name_idx
+ON artist (artist_name);
+```
+
+Track:
+``` MySQL
+CREATE INDEX track_title_idx
+ON track (title);
 ```
 
 

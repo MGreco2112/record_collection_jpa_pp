@@ -61,6 +61,9 @@ Artist:
 ``` MySQL
 CREATE INDEX artist_name_idx
 ON artist (artist_name);
+
+CREATE INDEX artist_name_formatted_idx
+ON artist (artist_name_formatted);
 ```
 
 Track:

@@ -55,6 +55,9 @@ Record:
 ``` MySQL
 CREATE INDEX record_name_idx
 ON record (name);
+
+CREATE INDEX record_name_formatted_idx
+ON record (name_formatted);
 ```
 
 Artist:

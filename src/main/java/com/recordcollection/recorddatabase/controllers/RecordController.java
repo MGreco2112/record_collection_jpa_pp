@@ -62,6 +62,7 @@ public class RecordController {
 
     @GetMapping("/tracks")
     public List<Track> getAllTracks() {
+
         return trackRepository.findAll();
     }
 
@@ -184,11 +185,29 @@ public class RecordController {
     @GetMapping("/search/recordsWithTrack/{query}")
     public List<Record> recordsByTrackNameSearchQuery(@PathVariable String query) {
 
-        //TODO get this method to return all records as opposed to only the first ascending index
+        //PRE INDEX CALCULATIONS
+
+        //FIRST entry takes 183 Millis
+        //MIDDLE entry takes 191 Millis
+        //LAST entry takes 189 Millis
+
+        //FIRST batch takes 194 Millis
+        //MIDDLE batch takes 201 Millis
+        //LAST batch takes 193 Millis
+
+        //POST INDEX CALCULATIONS
+        //FIRST BATCH takes 18 millis
+        //MIDDLE batch takes 21 Millis
+        //Last batch takes 27 Millis
 
         List<Long> recordIds = trackRepository.getRecordIdsByTrackTitle(query);
 
         return repository.getRecordsByBulkIds(recordIds);
+    }
+
+    @GetMapping("/tracks/{trackName}")
+    public List<Track> getTracksByTrackName(@PathVariable String trackName) {
+        return trackRepository.getTracksByTitle(trackName);
     }
 
     //not yet working

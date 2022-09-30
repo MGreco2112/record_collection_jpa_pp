@@ -210,14 +210,6 @@ public class RecordController {
         return trackRepository.getTracksByTitle(trackName);
     }
 
-    //not yet working
-    @PostMapping(path = "/recordExists", consumes = "application/x-www-form-urlencoded")
-    public ResponseEntity<List<Record>> recordExistsByName(@RequestBody RecordExistsRequest request) {
-        List<Record> comparableRecords = repository.checkRecordExists(request.getName());
-
-        return ResponseEntity.ok(comparableRecords);
-    }
-
     @GetMapping("/artistExists/{name}")
     public ResponseEntity<List<Artist>> artistExistsByName(@PathVariable String name) {
         List<Artist> artists = artistRepository.checkArtistExists(name);
@@ -235,6 +227,8 @@ public class RecordController {
                 record.getNumberOfTracks(),
                 null,
                 record.getImageLink()));
+
+        //TODO replace this segment with a mySQL trigger to attach Id into name_formatted field
 
         newRecord.setNameFormatted(newRecord.getNameFormatted() + "_" + newRecord.getId());
 
@@ -302,11 +296,15 @@ public class RecordController {
 
                     newRecord.setTracks(trackList);
 
+                    //TODO replace this segment with MySQL trigger
+
                     newRecord.setNameFormatted(newRecord.getName().replaceAll(" ", "_") + "_" + newRecord.getId());
 
                     repository.save(newRecord);
 
                     Artist updateNewArtist = artistRepository.save(newArtist);
+
+                    //TODO replace this segment with MySQL trigger
 
                     updateNewArtist.setArtistNameFormatted(updateNewArtist.getArtistName() + updateNewArtist.getId());
 
@@ -327,6 +325,8 @@ public class RecordController {
                     newRecord.setTracks(trackList);
 
                     repository.save(newRecord);
+
+                    //TODO replace this segment with MySQL trigger
 
                     newRecord.setNameFormatted(newRecord.getName().replaceAll(" ", "_") + "_" + newRecord.getId());
 
@@ -370,6 +370,8 @@ public class RecordController {
         }
 
         memberRepository.saveAll(members);
+
+        //TODO replace this segment with MySQL trigger
 
         newArtist.setArtistNameFormatted(newArtist.getArtistName() + "_" + newArtist.getId());
 

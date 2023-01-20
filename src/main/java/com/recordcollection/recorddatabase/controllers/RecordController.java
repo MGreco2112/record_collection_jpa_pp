@@ -1,6 +1,8 @@
 package com.recordcollection.recorddatabase.controllers;
 
 
+import com.recordcollection.recorddatabase.Specifications.ArtistRecordSpecification;
+import com.recordcollection.recorddatabase.Specifications.Specification;
 import com.recordcollection.recorddatabase.models.*;
 import com.recordcollection.recorddatabase.models.Record;
 import com.recordcollection.recorddatabase.payloads.request.*;
@@ -36,6 +38,8 @@ public class RecordController {
     private CommentRepository commentRepository;
     @Autowired
     private MemberRepository memberRepository;
+    @Autowired
+    private ArtistRecordSpecification specification;
 
     @Value("${Spring.datasource.driver-class-name}")
     private String myDriver;
@@ -114,6 +118,13 @@ public class RecordController {
         }
 
         return ResponseEntity.ok(selArtist);
+    }
+    //TODO finish this method
+    @GetMapping("/artist/record/{title}")
+    public ResponseEntity<Artist> getArtistByRecordTitle(@PathVariable String title) {
+        Specification<Artist> selArtist = specification.findRecordsByArtistWithTitle(title);
+
+        return null;
     }
 
     @GetMapping("/artistToEdit/{id}")

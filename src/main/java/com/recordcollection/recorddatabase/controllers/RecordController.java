@@ -120,12 +120,12 @@ public class RecordController {
         return ResponseEntity.ok(selArtist);
     }
     //TODO finish this method
-    @GetMapping("/artist/record/{title}")
-    public ResponseEntity<Artist> getArtistByRecordTitle(@PathVariable String title) {
-        Specification<Artist> selArtist = specification.findRecordsByArtistWithTitle(title);
-
-        return null;
-    }
+//    @GetMapping("/artist/record/{title}")
+//    public ResponseEntity<Artist> getArtistByRecordTitle(@PathVariable String title) {
+//        Specification<Artist> selArtist = specification.findRecordsByArtistWithTitle(title);
+//
+//        return null;
+//    }
 
     @GetMapping("/artistToEdit/{id}")
     public ResponseEntity<EditArtistResponse> getEditArtistByName(@PathVariable Long id) {

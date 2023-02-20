@@ -38,8 +38,8 @@ public class RecordController {
     private CommentRepository commentRepository;
     @Autowired
     private MemberRepository memberRepository;
-    @Autowired
-    private ArtistRecordSpecification specification;
+//    @Autowired
+//    private ArtistRecordSpecification specification;
 
     @Value("${Spring.datasource.driver-class-name}")
     private String myDriver;
